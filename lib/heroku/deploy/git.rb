@@ -20,10 +20,10 @@ class Git
   end
 
   def diff(options)
-    shell %{git show --pretty="format:" #{options[:from]}..#{options[:to]} db/migrate}
+    shell %{git show --pretty="format:" #{options[:from]}..#{options[:to]} #{options[:folder]}}
   end
 
   def push_to(options)
-    shell "git push #{options[:remote]} #{options[:ref]}:master", :exec => true
+    shell "git push #{options[:remote]} #{options[:ref]}:master --force", :exec => true
   end
 end
