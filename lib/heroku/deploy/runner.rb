@@ -1,7 +1,6 @@
 require "heroku/deploy/ui"
 require "heroku/deploy/shell"
 require "heroku/deploy/heroku_app"
-require "heroku/deploy/bugsnag_notifier"
 require "heroku/deploy/git_local"
 require "heroku/deploy/git_remote"
 
