@@ -1,8 +1,8 @@
 class GitLocal
   include Heroku::Deploy::Shell
 
-  def commit_sha(options)
-    git_show = shell %{git show --format=short #{options[:ref]}}
+  def sha_for_ref(ref)
+    git_show = shell %{git show --format=short #{ref}}
     commit_sha = git_show.match(/^commit\s(.+)$/) ? $1.chomp : nil
   end
 

@@ -11,16 +11,14 @@ module Heroku::Deploy
       new(app, api).deploy
     end
 
-    attr_accessor :app, :api, :remote, :config, :heroku_app, :local_git, :deploy_ref
+    attr_accessor :app, :api, :git, :heroku_app
 
     def initialize(app, api)
       @api = api
       @app = app
 
       @heroku_app = HerokuApp.new app
-      @local_git = GitLocal.new
-
-      @deploy_ref = "HEAD"
+      @git = GitLocal.new
     end
 
     def app_data
@@ -31,20 +29,9 @@ module Heroku::Deploy
       @config ||= api.get_config_vars(app).body
     end
 
-    def update_local_repo_to_latest
-      local_git.fetch
+    def deploy_sha
+
     end
-
-    def find_commit_sha_for_ref
-      commit_sha = local_git.commit_sha :ref => deploy_ref
-
-      unless commit_sha
-        error "Couldn't figure out the full commit SHA for `#{deploy_ref}`"
-      end
-
-      commit_sha
-    end
-
 
     def has_migrations?(diff)
       diff.match(/ActiveRecord::Migration/)
@@ -56,8 +43,8 @@ module Heroku::Deploy
 
     def migrate_database
       info "Checking out to the correct commit locally"
-      current_branch = local_git.current_branch
-      local_git.checkout deploy_ref
+      current_branch = git.current_branch
+      git.checkout deploy_ref
 
       info "Migrating..."
       heroku_app.migrate!
@@ -66,7 +53,7 @@ module Heroku::Deploy
       heroku_app.prepare_search_database!
 
       info "Returning repo to its previous state"
-      local_git.checkout current_branch
+      git.checkout current_branch
     end
 
     def prepare_for_unsafe_migration
@@ -92,42 +79,41 @@ module Heroku::Deploy
     end
 
     def push_to_heroku(git_url, commit_sha)
-      local_git.push_to :remote => git_url, :ref => commit_sha
+      git.push_to :remote => git_url, :ref => commit_sha
 
       api.put_config_vars app, { 'DEPLOYED_COMMIT' => commit_sha }
     end
 
     def deploy
-      info <<-OUT
-       _            _             _
-    __| | ___ _ __ | | ___  _   _(_)_ __   __ _
-   / _` |/ _ \\ '_ \\| |/ _ \\| | | | | '_ \\ / _` |
-  | (_| |  __/ |_) | | (_) | |_| | | | | | (_| |
-   \\__,_|\\___| .__/|_|\\___/ \\__, |_|_| |_|\\__, |
-               |_|          |___/         |___/
+      banner <<-OUT
+      _            _             _
+   __| | ___ _ __ | | ___  _   _(_)_ __   __ _
+  / _` |/ _ \\ '_ \\| |/ _ \\| | | | | '_ \\ / _` |
+ | (_| |  __/ |_) | | (_) | |_| | | | | | (_| |
+  \\__,_|\\___| .__/|_|\\___/ \\__, |_|_| |_|\\__, |
+              |_|          |___/         |___/
       OUT
 
-      info "First, lets make sure your local git repo is up to date"
-      update_local_repo_to_latest
+      info "Gathering information about the deploy"
+      commit = git.sha_for_ref 'HEAD'
+      git_url = app_data['git_url']
 
-      info "Finding the local commit sha for (#{deploy_ref})"
-      commit_sha = find_commit_sha_for_ref
-      ok "It's #{commit_sha}. Moving on.."
-
-      info "Finding out what is deployed on #{heroku_app.git.repo}"
+      info "Finding out what is deployed on #{git_url}"
       last_commit = config['DEPLOYED_COMMIT']
+
+      info "Calculating deploy deltas"
 
       if !last_commit.empty?
         ok "Found it! #{last_commit}"
-        info "Deploying #{last_commit}..#{commit_sha}"
-      elsif last_commit == commit_sha
+        info "Deploying #{last_commit}..#{commit}"
+      elsif last_commit == commit
         finish "Nothing to deploy! Thanks for playing :D:D"
       else
         info "No previous commit found. Treating it like a new deploy"
       end
 
       if !last_commit.empty?
-        diff = local_git.diff :from => last_commit, :to => commit_sha
+        diff = git.diff :from => last_commit, :to => commit
 
         if has_migrations?(diff)
           if has_unsafe_migrations?(diff)
@@ -141,10 +127,8 @@ module Heroku::Deploy
         end
       end
 
-      git_url = app_data['git_url']
-
-      info "Pushing code to #{git_url}"
-      push_to_heroku git_url, commit_sha
+      info "Pushing #{commit} to #{git_url}"
+      push_to_heroku git_url, commit
 
       if !last_commit.empty?
         if has_unsafe_migrations?(diff)
