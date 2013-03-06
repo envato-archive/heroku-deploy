@@ -1,7 +1,7 @@
 require "heroku/deploy/ui"
 require "heroku/deploy/shell"
 require "heroku/deploy/heroku_app"
-require "heroku/deploy/git_local"
+require "heroku/deploy/git"
 
 module Heroku::Deploy
   class Runner
@@ -18,7 +18,7 @@ module Heroku::Deploy
       @app = app
 
       @heroku_app = HerokuApp.new app
-      @git = GitLocal.new
+      @git = Git.new
     end
 
     def app_data
@@ -27,10 +27,6 @@ module Heroku::Deploy
 
     def config
       @config ||= api.get_config_vars(app).body
-    end
-
-    def deploy_sha
-
     end
 
     def has_migrations?(diff)

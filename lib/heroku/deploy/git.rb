@@ -1,4 +1,4 @@
-class GitLocal
+class Git
   include Heroku::Deploy::Shell
 
   def sha_for_ref(ref)
