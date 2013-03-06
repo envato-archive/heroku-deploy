@@ -18,12 +18,10 @@ module Heroku::Deploy
       @app = app
       @api = api
 
-
       @heroku_app = HerokuApp.new app
       @local_git = GitLocal.new
 
-      @deploy_ref = ENV["GIT_COMMIT"] || 'HEAD'
-      error "Missing GIT_COMMIT" unless @deploy_ref
+      @deploy_ref = "HEAD"
     end
 
     def config
