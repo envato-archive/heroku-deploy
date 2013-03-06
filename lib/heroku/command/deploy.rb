@@ -5,7 +5,7 @@ class Heroku::Command::Deploy < Heroku::Command::Run
   #
   # deploy your code
   def deploy
-    p 'test another'
+    Heroku::Deploy::Runner.deploy app
   end
   alias_command 'deploy', 'deploy:deploy'
 end

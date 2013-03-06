@@ -5,10 +5,10 @@ module Shell
     puts "$  #{cmd}"
     cmd = "#{cmd} 2>&1" # Ensure all output is written to the same place
     if options[:exec]
-      Bundler.with_clean_env { system cmd }
+      system cmd
     else
       output = ""
-      Bundler.with_clean_env { output = `#{cmd}` }
+      output = `#{cmd}`
       error output if $?.to_i > 0
 
       # Ensure the string is valid utf8
