@@ -18,6 +18,7 @@ module Heroku::Deploy
       @app = app
       @api = api
 
+
       @heroku_app = HerokuApp.new app
       @local_git = GitLocal.new
 
@@ -73,7 +74,7 @@ module Heroku::Deploy
 
       unless heroku_app.is_staging?
         info "Also, because we're not on staging, we should disable preboot"
-        heroku_app.labs! :preboot, :disable
+        api.delete_feature :preboot, app
       end
     end
 
@@ -85,7 +86,7 @@ module Heroku::Deploy
 
       unless heroku_app.is_staging?
         info "Because this isn't staging, I'm going to turn preboot back on. Like a boss!"
-        heroku_app.labs! :preboot, :enable
+        api.post_feature :preboot, app
       end
     end
 

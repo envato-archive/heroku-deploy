@@ -28,10 +28,6 @@ class HerokuApp
     heroku_shell "heroku maintenance:#{action.to_s}"
   end
 
-  def labs!(name, action)
-    heroku_shell "heroku labs:#{action.to_s} #{name.to_s}"
-  end
-
   private
 
   def remote_database_shell(cmd, options = {})
