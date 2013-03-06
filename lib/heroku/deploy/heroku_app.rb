@@ -5,7 +5,6 @@ class HerokuApp
 
   def initialize(app_name)
     self.app_name = app_name
-    self.git = GitRemote.new git_remote
   end
 
   def is_staging?
