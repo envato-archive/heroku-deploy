@@ -3,7 +3,7 @@ module Heroku::Deploy
     include UI
 
     def shell(cmd, options = {})
-      puts "$  #{cmd}"
+      puts "$  #{cmd}" if ENV['DEBUG']
       cmd = "#{cmd} 2>&1" # Ensure all output is written to the same place
       if options[:exec]
         system cmd
