@@ -2,7 +2,6 @@ require "heroku/deploy/ui"
 require "heroku/deploy/shell"
 require "heroku/deploy/heroku_app"
 require "heroku/deploy/bugsnag_notifier"
-require "heroku/deploy/dependency_checker"
 require "heroku/deploy/git_local"
 require "heroku/deploy/git_remote"
 
@@ -22,10 +21,6 @@ module Heroku::Deploy
 
       @deploy_ref = ENV["GIT_COMMIT"] || 'HEAD'
       error "Missing GIT_COMMIT" unless @deploy_ref
-    end
-
-    def check_for_dependencies
-      DependencyChecker.check!
     end
 
     def update_local_repo_to_latest
@@ -113,10 +108,6 @@ module Heroku::Deploy
    \\__,_|\\___| .__/|_|\\___/ \\__, |_|_| |_|\\__, |
                |_|          |___/         |___/
       OUT
-
-      info "Checking for dependencies"
-      check_for_dependencies
-      ok "You have all the dependencies for deploying. Yay!"
 
       info "First, lets make sure your local git repo is up to date"
       update_local_repo_to_latest
