@@ -8,10 +8,6 @@ class HerokuApp
     self.git = GitRemote.new git_remote
   end
 
-  def git_remote
-    "git@heroku.com:#{app_name}.git"
-  end
-
   def is_staging?
     app_name.match(/staging/)
   end

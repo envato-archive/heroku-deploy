@@ -12,11 +12,11 @@ module Heroku::Deploy
       new(app, api).deploy
     end
 
-    attr_accessor :app, :api, :config, :heroku_app, :local_git, :deploy_ref
+    attr_accessor :app, :api, :remote, :config, :heroku_app, :local_git, :deploy_ref
 
     def initialize(app, api)
-      @app = app
       @api = api
+      @app = app
 
       @heroku_app = HerokuApp.new app
       @local_git = GitLocal.new
@@ -24,8 +24,12 @@ module Heroku::Deploy
       @deploy_ref = "HEAD"
     end
 
+    def app_data
+      @app_data ||= api.get_app(app).body
+    end
+
     def config
-      @config ||= @api.get_config_vars(@app).body
+      @config ||= api.get_config_vars(app).body
     end
 
     def update_local_repo_to_latest
@@ -88,8 +92,8 @@ module Heroku::Deploy
       end
     end
 
-    def push_to_heroku(commit_sha)
-      local_git.push_to :remote => heroku_app.git_remote, :ref => commit_sha
+    def push_to_heroku(git_url, commit_sha)
+      local_git.push_to :remote => git_url, :ref => commit_sha
 
       api.put_config_vars app, { 'DEPLOYED_COMMIT' => commit_sha }
     end
@@ -138,8 +142,10 @@ module Heroku::Deploy
         end
       end
 
-      info "Pushing code to #{heroku_app.git_remote}"
-      push_to_heroku commit_sha
+      git_url = app_data['git_url']
+
+      info "Pushing code to #{git_url}"
+      push_to_heroku git_url, commit_sha
 
       if !last_commit.empty?
         if has_unsafe_migrations?(diff)
