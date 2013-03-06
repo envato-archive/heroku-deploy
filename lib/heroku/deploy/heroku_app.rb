@@ -1,5 +1,5 @@
 class HerokuApp
-  include Shell
+  include Heroku::Deploy::Shell
 
   attr_accessor :git, :app_name
 

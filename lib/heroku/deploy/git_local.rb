@@ -1,5 +1,5 @@
 class GitLocal
-  include Shell
+  include Heroku::Deploy::Shell
 
   def commit_sha(options)
     git_show = shell %{git show --format=short #{options[:ref]}}
