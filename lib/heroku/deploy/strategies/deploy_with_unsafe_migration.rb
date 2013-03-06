@@ -1,10 +1,6 @@
 module Heroku::Deploy
   class Strategy::DeployWithUnsafeMigration < Strategy::DeployToHeroku
     def migrate_database
-      info "Checking out to the correct commit locally"
-      current_branch = git.current_branch
-      git.checkout deploy_ref
-
       info "Migrating..."
       heroku_app.migrate!
 
@@ -36,5 +32,34 @@ module Heroku::Deploy
         api.post_feature :preboot, app
       end
     end
+  end
+
+  def prepare_search_database!
+    remote_database_shell %{rake db:search:prepare}, :exec => true
+  end
+
+  def migrate!
+    remote_database_shell %{rake db:migrate}, :exec => true
+  end
+
+  private
+
+  def remote_database_shell(cmd, options = {})
+    rails_env    = config('RAILS_ENV')
+    database_url = config('DATABASE_URL')
+
+    heroku_shell %{DATABASE_URL=#{database_url} RAILS_ENV=#{rails_env} #{cmd}}, options
+  end
+
+  def heroku_shell(cmd, options={})
+    output = shell "#{cmd} --app #{app_name}", options
+
+    unless options[:exec]
+      if output.match /Authentication failure/
+        error "Arrgh! I couldnt perform this heroku command.\n#{output}"
+      end
+    end
+
+    output
   end
 end

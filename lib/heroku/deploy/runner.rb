@@ -1,6 +1,5 @@
 require "heroku/deploy/ui"
 require "heroku/deploy/shell"
-require "heroku/deploy/heroku_app"
 require "heroku/deploy/git"
 require "heroku/deploy/delta"
 require "heroku/deploy/strategy"
@@ -18,9 +17,6 @@ module Heroku::Deploy
     def initialize(app, api)
       @api = api
       @app = app
-
-      @heroku_app = HerokuApp.new app
-      @git = Git.new
     end
 
     def app_data
@@ -42,17 +38,17 @@ module Heroku::Deploy
       OUT
 
       info "Gathering information about the deploy"
-      commit = git.sha_for_ref 'HEAD'
+      new_commit = git.sha_for_ref 'HEAD'
       git_url = app_data['git_url']
 
       info "Finding out what is deployed on #{git_url}"
       deployed_commit = config['DEPLOYED_COMMIT']
 
-      info "Determining deploy strategy"
-      delta = Delta.calcuate_from commit, deployed_commit
+      info "Determining deploy strategy #{deployed_commit}..#{new_commit}"
+      delta = Delta.calcuate_from deployed_commit, new_commit
 
-      info "Performing deploy"
       strategy = Strategy.build_from_delta delta, app_data, api
+      info "Performing deploy using the #{strategy.class.name} strategy"
       strategy.perform
 
       finish "Finished! Thanks for playing."

@@ -10,8 +10,11 @@ module Heroku::Deploy
       @app_data = app_data
     end
 
+    def git
+      @git ||= Git.new
+    end
+
     def push_code
-      git     = Git.new
       git_url = app_data['git_url']
 
       git.push_to :remote => git_url, :ref => commit
