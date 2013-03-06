@@ -152,9 +152,6 @@ module Heroku::Deploy
         end
       end
 
-      info "Letting Bugsnag know that we've deployed"
-      notify_bugsnag
-
       finish "Finished! Thanks for playing."
     end
   end
