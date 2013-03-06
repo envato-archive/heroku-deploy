@@ -1,0 +1,18 @@
+module Shell
+  include UI
+
+  def shell(cmd, options = {})
+    puts "$  #{cmd}"
+    cmd = "#{cmd} 2>&1" # Ensure all output is written to the same place
+    if options[:exec]
+      Bundler.with_clean_env { system cmd }
+    else
+      output = ""
+      Bundler.with_clean_env { output = `#{cmd}` }
+      error output if $?.to_i > 0
+
+      # Ensure the string is valid utf8
+      output.to_s.chomp.force_encoding("ISO-8859-1").encode("utf-8", replace: nil)
+    end
+  end
+end
