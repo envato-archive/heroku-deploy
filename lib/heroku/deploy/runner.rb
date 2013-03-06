@@ -8,18 +8,25 @@ module Heroku::Deploy
   class Runner
     include Shell
 
-    def self.deploy(heroku_app)
-      new(heroku_app).deploy
+    def self.deploy(app, api)
+      new(app, api).deploy
     end
 
-    attr_accessor :heroku_app, :local_git, :deploy_ref
+    attr_accessor :app, :api, :config, :heroku_app, :local_git, :deploy_ref
 
-    def initialize(app_name)
-      @heroku_app = HerokuApp.new app_name
+    def initialize(app, api)
+      @app = app
+      @api = api
+
+      @heroku_app = HerokuApp.new app
       @local_git = GitLocal.new
 
       @deploy_ref = ENV["GIT_COMMIT"] || 'HEAD'
       error "Missing GIT_COMMIT" unless @deploy_ref
+    end
+
+    def config
+      @config ||= @api.get_config_vars(@app).body
     end
 
     def update_local_repo_to_latest
@@ -36,16 +43,6 @@ module Heroku::Deploy
       commit_sha
     end
 
-    def find_latest_commit_on_heroku
-      @latest_heroku_commit ||= heroku_app.config 'DEPLOYED_COMMIT'
-    end
-
-    def notify_bugsnag
-      BugsnagNotifier.notify({
-        :api_key => heroku_app.config('BUGSNAG_API_KEY'),
-        :release_stage => heroku_app.config('RAILS_ENV') || 'production'
-      })
-    end
 
     def has_migrations?(diff)
       diff.match(/ActiveRecord::Migration/)
@@ -95,7 +92,7 @@ module Heroku::Deploy
     def push_to_heroku(commit_sha)
       local_git.push_to :remote => heroku_app.git_remote, :ref => commit_sha
 
-      heroku_app.set_config 'DEPLOYED_COMMIT', commit_sha
+      api.put_config_vars app, { 'DEPLOYED_COMMIT' => commit_sha }
     end
 
     def deploy
@@ -116,7 +113,7 @@ module Heroku::Deploy
       ok "It's #{commit_sha}. Moving on.."
 
       info "Finding out what is deployed on #{heroku_app.git.repo}"
-      last_commit = find_latest_commit_on_heroku
+      last_commit = config['DEPLOYED_COMMIT']
 
       if !last_commit.empty?
         ok "Found it! #{last_commit}"

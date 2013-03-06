@@ -32,14 +32,6 @@ class HerokuApp
     heroku_shell "heroku labs:#{action.to_s} #{name.to_s}"
   end
 
-  def config(name)
-    heroku_shell %{heroku config:get #{name}}
-  end
-
-  def set_config(name, value)
-    heroku_shell %{heroku config:set #{name}=#{value}}
-  end
-
   private
 
   def remote_database_shell(cmd, options = {})
