@@ -24,10 +24,6 @@ class HerokuApp
     remote_database_shell %{rake db:migrate}, :exec => true
   end
 
-  def maintenance!(action)
-    heroku_shell "heroku maintenance:#{action.to_s}"
-  end
-
   private
 
   def remote_database_shell(cmd, options = {})

@@ -70,7 +70,7 @@ module Heroku::Deploy
 
     def prepare_for_unsafe_migration
       info "So this deploy has UNSAFE migrations. Lets do the maintenance thing."
-      heroku_app.maintenance! :on
+      api.post_app_maintenance(app, '1')
 
       unless heroku_app.is_staging?
         info "Also, because we're not on staging, we should disable preboot"
@@ -82,7 +82,7 @@ module Heroku::Deploy
       migrate_database
 
       info "Turning off maintenance mode"
-      heroku_app.maintenance! :off
+      api.post_app_maintenance(app, '0')
 
       unless heroku_app.is_staging?
         info "Because this isn't staging, I'm going to turn preboot back on. Like a boss!"
