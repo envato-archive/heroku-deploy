@@ -1,21 +1,35 @@
 module Heroku::Deploy::Task
   class UnsafeMigration < Base
+    include Heroku::Deploy::UI
+
     def before_push
-      #unless heroku_app.is_staging?
-        #info "Also, because we're not on staging, we should disable preboot"
-        #api.delete_feature :preboot, app
-      #end
-      raise 'unsafe migration'
-      api.post_app_maintenance(app, '1')
+      task "Checking if preboot is enabled" do
+        @preboot = app.feature_enabled? :preboot
+      end
+
+      if @preboot
+        task "Disabling preboot while we run migrations" do
+          app.disable_feature :preboot
+        end
+      end
+
+      task "Turning on maintenance mode" do
+        app.enable_maintenance
+      end
     end
 
     def after_push
       DatabaseMigrate.new(strategy).perform
-      api.post_app_maintenance(app, '0')
-      #unless heroku_app.is_staging?
-        #info "Because this isn't staging, I'm going to turn preboot back on. Like a boss!"
-        #api.post_feature :preboot, app
-      #end
+
+      task "Turning off maintenance mode" do
+        app.disable_maintenance
+      end
+
+      if @preboot
+        task "Enabling preboot again" do
+          app.enable_feature :preboot
+        end
+      end
     end
   end
 end
