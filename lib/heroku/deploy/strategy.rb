@@ -24,9 +24,9 @@ module Heroku::Deploy
       tasks << Task::CommitManifest
 
       if delta.has_unsafe_migrations?
-        #tasks << Task::UnsafeMigration
+        tasks << Task::UnsafeMigration
       elsif delta.has_migrations?
-        #tasks << Task::SafeMigration
+        tasks << Task::SafeMigration
       end
 
       new(delta, app, tasks).perform
