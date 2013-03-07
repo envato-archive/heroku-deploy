@@ -47,9 +47,7 @@ module Heroku::Deploy
         delta = Delta.calcuate_from deployed_commit, new_commit
       end
 
-      strategy = Strategy.build_from_delta delta, app
-      task "Deploying with #{colorize strategy.class.name, :cyan}"
-      strategy.perform
+      Strategy.perform_from_delta delta, app
 
       finish "Finished! Thanks for playing."
     end

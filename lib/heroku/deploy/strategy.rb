@@ -12,7 +12,7 @@ module Heroku::Deploy
   class Strategy
     include UI
 
-    def self.build_from_delta(delta, app)
+    def self.perform_from_delta(delta, app)
       tasks = [ Task::StashGitChanges ]
 
       if delta.has_asset_changes?
@@ -29,7 +29,7 @@ module Heroku::Deploy
         #tasks << Task::SafeMigration
       end
 
-      new delta, app, tasks
+      new(delta, app, tasks).perform
     end
 
     attr_accessor :delta, :commit, :app, :tasks
