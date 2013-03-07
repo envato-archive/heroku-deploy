@@ -3,13 +3,14 @@ module Heroku::Deploy::Task
     include Heroku::Deploy::Shell
 
     def before_push
-      @previous_sha = calcuate_sha
+      @previous_sha = calculate_sha
 
-      git 'add public/assets/manifest.yml'
-      git 'commit -m "Manifest for deploy"'
+      task "Commiting manifest.yml for deployment" do
+        git 'add public/assets/manifest.yml'
+        git 'commit -m "Manifest for deploy"'
+      end
 
-      # Change which commit to deploy. This one includes a manifest
-      strategy.commit = calcuate_sha
+      strategy.commit = calculate_sha
     end
 
     def rollback_before_push
