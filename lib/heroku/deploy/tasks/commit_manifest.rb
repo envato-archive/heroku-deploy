@@ -5,15 +5,24 @@ module Heroku::Deploy::Task
     def before_push
       @previous_sha = calculate_sha
 
-      manifest = "public/assets/manifest.yml"
+      name = "manifest.yml"
+      manifest = "public/assets/#{name}"
       error "#{manifest} could not be found" unless File.exist?(manifest)
 
-      task "Commiting manifest.yml for deployment" do
-        git %{add #{manifest}}
-        git %{commit #{manifest} -m "Manifest for deploy"}
+      has_changes = false
+      task "Checking to see if there are any #{colorize name, :cyan} changes" do
+        changes = git %{status #{manifest} --porcelain}
+        has_changes = !changes.empty?
       end
 
-      strategy.commit = calculate_sha
+      if has_changes
+        task "Commiting changed #{colorize name, :cyan} for deployment" do
+          git %{add #{manifest}}
+          git %{commit #{manifest} -m "Manifest for deploy"}
+        end
+
+        strategy.commit = calculate_sha
+      end
     end
 
     def rollback_before_push
