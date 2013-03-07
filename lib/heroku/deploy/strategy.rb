@@ -17,9 +17,9 @@ module Heroku::Deploy
       tasks = [ ]
 
       if delta.has_asset_changes?
-        tasks << Task::CompileAssets
+        #tasks << Task::CompileAssets
       else
-        tasks << Task::StealManifest
+        #tasks << Task::StealManifest
       end
 
       if false
@@ -35,12 +35,13 @@ module Heroku::Deploy
       new delta, app, tasks
     end
 
-    attr_accessor :delta, :app, :tasks
+    attr_accessor :delta, :commit, :app, :tasks
 
     def initialize(delta, app, tasks)
-      @delta = delta
-      @app   = app
-      @tasks = tasks.map { |task| task.new(self) }
+      @delta  = delta
+      @commit = delta.to
+      @app    = app
+      @tasks  = tasks.map { |task| task.new(self) }
     end
 
     def perform
