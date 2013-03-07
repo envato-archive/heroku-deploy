@@ -11,7 +11,7 @@ module Heroku::Deploy::Task
       env_vars['RAILS_GROUPS'] = 'assets'
 
       task "Precompiling assets"
-      shell "bundle exec rake assets:precompile:primary", :env => env_vars, :exec => true
+      shell "bundle exec rake assets:precompile", :env => env_vars, :exec => true
     end
   end
 end
