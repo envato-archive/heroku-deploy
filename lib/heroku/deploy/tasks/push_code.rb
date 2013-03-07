@@ -8,7 +8,9 @@ module Heroku::Deploy::Task
 
       git "push #{git_url} #{commit}:master --force -v", :exec => true
 
-      app.put_config_vars app.name, { 'DEPLOYED_COMMIT' => commit }
+      # Make sure we store the original, because strategy.commit may have
+      # changed from one of the tasks (manifest commit)
+      app.put_config_vars 'DEPLOYED_COMMIT' => strategy.delta.to
     end
   end
 end
