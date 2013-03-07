@@ -41,21 +41,30 @@ module Heroku::Deploy
               |_|          |___/         |___/
       OUT
 
-      info "Gathering information about the deploy"
-      new_commit = git.sha_for_ref 'HEAD'
-      git_url = app_data['git_url']
 
-      info "Finding out what is deployed on #{git_url}"
-      deployed_commit = config['DEPLOYED_COMMIT']
+      new_commit, git_url = nil
+      task "Gathering information about the deploy" do
+        new_commit = git.sha_for_ref 'HEAD'
+        git_url = app_data['git_url']
+      end
+      finish "Finished! Thanks for playing."
 
-      info "Determining deploy strategy #{deployed_commit}..#{new_commit}"
-      delta = Delta.calcuate_from deployed_commit, new_commit
+      deployed_commit = nil
+      task "Querying #{colorize git_url, :cyan} for latest deployed commit" do
+        deployed_commit = config['DEPLOYED_COMMIT']
+      end
+
+      delta = nil
+      difference = "#{deployed_commit[0..7]}..#{new_commit[0..7]}"
+      info "Determining deploy strategy for #{colorize difference, :cyan}" do
+        delta = Delta.calcuate_from deployed_commit, new_commit
+      end
 
       strategy = Strategy.build_from_delta delta, app_data, api
-      info "Performing deploy using the #{strategy.class.name} strategy"
-      strategy.perform
+      task "Deploying #{colorize strategy.class.name, :cyan} strategy" do
+        strategy.perform
+      end
 
-      finish "Finished! Thanks for playing."
     end
   end
 end

@@ -1,40 +1,49 @@
+require "heroku/deploy/ui/colors"
+require "heroku/deploy/ui/spinner"
+
 module Heroku::Deploy
   module UI
-    COLORS = %w(cyan yellow green magenta red)
-    COLOR_CODES = {
-      "red"     => 31,
-      "green"   => 32,
-      "yellow"  => 33,
-      "magenta" => 35,
-      "cyan"    => 36,
-    }
+    include Colors
+
+    PREFIX = "--> "
+
+    def task(message, &block)
+      print "#{PREFIX}#{message}...."
+      if block_given?
+        spinner = Heroku::Deploy::UI::Spinner.new
+        spinner.start
+        yield
+        spinner.stop
+      end
+      print colorize("✓\n", :green)
+    end
 
     def finish(message)
-      ok(message)
+      puts "#{colorize (PREFIX + message), :green} #{emoji :smile}"
       exit 0
     end
 
     def error(message)
-      print_and_colorize message, COLOR_CODES['red']
+      print_and_colorize message, :red
       exit 1
     end
 
     def info(message)
-      print_and_colorize message, COLOR_CODES['cyan']
+      print_and_colorize message, :cyan
     end
 
     def ok(message)
-      print_and_colorize message, COLOR_CODES['green']
+      print_and_colorize message, :green
     end
 
     def banner(message)
-      print_and_colorize message, COLOR_CODES['magenta']
+      print_and_colorize message, :magenta
     end
 
     private
 
     def print_and_colorize(message, color)
-      puts "\033[#{color}m#{message}\033[0m"
+      puts colorize(message, color)
     end
   end
 end
