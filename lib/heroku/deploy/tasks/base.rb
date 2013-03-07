@@ -14,7 +14,13 @@ module Heroku::Deploy::Task
       @strategy.api
     end
 
+    def rollback_before_push
+    end
+
     def before_push
+    end
+
+    def rollback_after_push
     end
 
     def after_push

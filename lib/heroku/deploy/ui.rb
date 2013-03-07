@@ -27,6 +27,10 @@ module Heroku::Deploy
       exit 0
     end
 
+    def warning(message)
+      puts colorize (PREFIX + message), :red
+    end
+
     def error(message)
       print_and_colorize message, :red
       exit 1

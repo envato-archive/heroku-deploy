@@ -20,6 +20,10 @@ module Heroku::Deploy::Task
       end
     end
 
+    def rollback_before_push
+      after_push
+    end
+
     def after_push
       return unless @requires_stashing
 

@@ -10,16 +10,18 @@ require_relative "tasks/unsafe_migration"
 
 module Heroku::Deploy
   class Strategy
+    include UI
+
     def self.build_from_delta(delta, app_data, api)
       tasks = [ Task::StashGitChanges.new(self) ]
 
-      if false
       if delta.has_asset_changes?
         tasks << Task::CompileAssets.new(self)
       else
         tasks << Task::StealManifest.new(self)
       end
 
+      if false
       tasks << Task::CommitManifest.new(self)
 
       if delta.has_unsafe_migrations?
@@ -42,9 +44,33 @@ module Heroku::Deploy
     end
 
     def perform
-      tasks.each &:before_push
-      # Task::PushCode.new(app_data, api).perform
-      tasks.each &:after_push
+      perform_and_rollback_if_required :before_push
+      Task::PushCode.new(app_data, api).perform
+      perform_and_rollback_if_required :after_push
+    end
+
+    private
+
+    def perform_and_rollback_if_required(action)
+      performed_tasks = []
+      current_task = nil
+
+      begin
+        tasks.each do |task|
+          current_task = task
+          current_task.public_send action
+
+          performed_tasks << current_task
+        end
+      rescue Exception => e
+        warning "An error occured when performing #{current_task.class.name}. Rolling back"
+
+        performed_tasks.reverse.each do |task|
+          task.public_send "rollback_#{action.to_s}"
+        end
+
+        raise e
+      end
     end
   end
 end
