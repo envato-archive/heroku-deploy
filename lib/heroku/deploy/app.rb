@@ -7,6 +7,10 @@ module Heroku::Deploy
       @name = name
     end
 
+    def host
+      data['domain_name']['domain']
+    end
+
     def git_url
       data['git_url']
     end

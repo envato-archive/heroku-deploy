@@ -42,14 +42,14 @@ module Heroku::Deploy
     end
 
     def perform
-      perform_and_rollback_if_required :before_push
+      perform_tasks tasks, :before_push
       Task::PushCode.new(self).perform
-      perform_and_rollback_if_required :after_push
+      perform_tasks tasks.reverse, :after_push
     end
 
     private
 
-    def perform_and_rollback_if_required(action)
+    def perform_tasks(tasks, action)
       performed_tasks = []
       current_task = nil
 
