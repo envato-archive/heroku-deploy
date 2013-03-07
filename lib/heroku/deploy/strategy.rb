@@ -42,18 +42,6 @@ module Heroku::Deploy
       @tasks   = tasks.map { |task| task.new(self) }
     end
 
-    def api
-      @runner.api
-    end
-
-    def env
-      @runner.env
-    end
-
-    def app_data
-      @runner.app_data
-    end
-
     def perform
       perform_and_rollback_if_required :before_push
       Task::PushCode.new(app_data, api).perform
