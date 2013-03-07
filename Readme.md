@@ -1,5 +1,7 @@
 # heroku-deploy
 
+It's better than `git push`
+
 ## Introduction
 
 TODO
