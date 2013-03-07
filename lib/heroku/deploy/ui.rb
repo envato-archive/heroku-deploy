@@ -59,6 +59,14 @@ module Heroku::Deploy
 
     private
 
+    def chop_sha(sha)
+      if sha
+        sha[0..7]
+      else
+        ""
+      end
+    end
+
     def print_and_colorize(message, color)
       puts colorize(message, color)
     end

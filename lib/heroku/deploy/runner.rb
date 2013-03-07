@@ -42,7 +42,7 @@ module Heroku::Deploy
       end
 
       delta = nil
-      difference = "#{deployed_commit[0..7]}..#{new_commit[0..7]}"
+      difference = "#{chop_sha deployed_commit}..#{chop_sha new_commit}"
       task "Determining deploy strategy for #{colorize difference, :cyan}" do
         delta = Delta.calcuate_from deployed_commit, new_commit
       end
