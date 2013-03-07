@@ -33,7 +33,7 @@ module Heroku::Deploy
       new_commit, git_url = nil
       task "Gathering information about the deploy" do
         new_commit = git %{rev-parse --verify HEAD}
-        git_url = app.data['git_url']
+        git_url = app.git_url
       end
 
       deployed_commit = nil

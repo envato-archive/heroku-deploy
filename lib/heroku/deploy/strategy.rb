@@ -45,7 +45,7 @@ module Heroku::Deploy
 
     def perform
       perform_and_rollback_if_required :before_push
-      Task::PushCode.new(app_data, api).perform
+      Task::PushCode.new(self).perform
       perform_and_rollback_if_required :after_push
     end
 
