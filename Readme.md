@@ -1,12 +1,12 @@
 # heroku-deploy
 
-You need the heroku-cli installed before you can use this plugin.
-
 ## Introduction
 
 TODO
 
 ## Installation and Usage
+
+You need the heroku-cli installed before you can use this plugin.
 
 ```bash
 heroku plugins:install git://github.com/envato/heroku-deploy.git
