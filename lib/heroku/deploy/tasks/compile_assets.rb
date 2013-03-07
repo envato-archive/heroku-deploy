@@ -13,5 +13,9 @@ module Heroku::Deploy::Task
       task "Precompiling assets"
       shell "bundle exec rake assets:precompile", :env => env_vars, :exec => true
     end
+
+    def rollback_before_push
+      git "clean -fd"
+    end
   end
 end
