@@ -12,16 +12,28 @@ module Heroku::Deploy
       @git  = Git.new
     end
 
-    def diff
-      @diff ||= git.diff :from => from, :to => to, :folder => "db/migrate"
+    def diff(folders)
+      git.diff :from => from, :to => to, :folder => folders.join(" ")
+    end
+
+    def has_asset_changes?
+      folders_that_could_have_changes = %w(app/assets lib/assets vendor/assets Gemfile.lock)
+
+      diff(folders_that_could_have_changes).match /diff/
     end
 
     def has_migrations?
-      diff.match(/ActiveRecord::Migration/)
+      migrations_diff.match /ActiveRecord::Migration/
     end
 
     def has_unsafe_migrations?
-      diff.match(/change_column|change_table|drop_table|remove_column|remove_index|rename_column|execute/)
+      migrations_diff.match /change_column|change_table|drop_table|remove_column|remove_index|rename_column|execute/
+    end
+
+    private
+
+    def migrations_diff
+      diff %w(db/migrate)
     end
   end
 end
