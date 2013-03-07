@@ -1,3 +1,4 @@
+require_relative "task_runner"
 require_relative "tasks/base"
 require_relative "tasks/stash_git_changes"
 require_relative "tasks/compile_assets"
@@ -41,34 +42,14 @@ module Heroku::Deploy
       @tasks  = tasks.map { |task| task.new(self) }
     end
 
-    def perform
-      perform_tasks tasks, :before_push
-      Task::PushCode.new(self).perform
-      perform_tasks tasks.reverse, :after_push
+    def task_runner
+      @task_runner ||= TaskRunner.new(tasks)
     end
 
-    private
-
-    def perform_tasks(tasks, action)
-      performed_tasks = []
-      current_task = nil
-
-      begin
-        tasks.each do |task|
-          current_task = task
-          current_task.public_send action
-
-          performed_tasks << current_task
-        end
-      rescue Exception => e
-        warning "An error occured when performing #{current_task.class.name}. Rolling back"
-
-        performed_tasks.reverse.each do |task|
-          task.public_send "rollback_#{action.to_s}"
-        end
-
-        raise e
-      end
+    def perform
+      task_runner.perform_method :before_push
+      Task::PushCode.new(self).perform
+      task_runner.perform_method_in_reverse :before_push
     end
   end
 end
