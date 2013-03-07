@@ -6,7 +6,7 @@ require "heroku/deploy/delta"
 require "heroku/deploy/strategy"
 
 module Heroku::Deploy
-  class Runner
+  class Deployer
     include Shell
 
     def self.deploy(app)
