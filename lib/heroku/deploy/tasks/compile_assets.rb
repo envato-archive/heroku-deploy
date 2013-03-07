@@ -7,7 +7,7 @@ module Heroku::Deploy::Task
       # initialize_on_precompile = shell %{bundle exec rails runner "puts Rails.application.config.assets.initialize_on_precompile"}
 
       task "Precompiling assets"
-      shell "bundle exec rake assets:precompile:primary", :env => runner.env, :exec => true
+      shell "bundle exec rake assets:precompile:primary", :env => app.env, :exec => true
     end
   end
 end

@@ -1,3 +1,4 @@
+require "heroku/deploy/app"
 require "heroku/deploy/ui"
 require "heroku/deploy/shell"
 require "heroku/deploy/git"
@@ -8,30 +9,14 @@ module Heroku::Deploy
   class Runner
     include Shell
 
-    def self.deploy(app, api)
-      new(app, api).deploy
+    def self.deploy(app)
+      new(app).deploy
     end
 
-    attr_accessor :app, :api, :heroku_app
+    attr_accessor :app
 
-    def initialize(app, api)
-      @api = api
+    def initialize(app)
       @app = app
-    end
-
-    def git
-      @git ||= Git.new
-    end
-
-    def app_data
-      @app_data ||= api.get_app(app).body
-    end
-
-    def env
-      @env ||= unless @env
-        vars = api.get_config_vars(app).body
-        vars.reject { |key, value| key == 'PATH' || key == 'GEM_PATH' }
-      end
     end
 
     def deploy
@@ -47,13 +32,13 @@ module Heroku::Deploy
 
       new_commit, git_url = nil
       task "Gathering information about the deploy" do
-        new_commit = git.sha_for_ref 'HEAD'
-        git_url = app_data['git_url']
+        new_commit = git %{rev-parse --verify HEAD}
+        git_url = app.data['git_url']
       end
 
       deployed_commit = nil
       task "Querying #{colorize git_url, :cyan} for latest deployed commit" do
-        deployed_commit = env['DEPLOYED_COMMIT']
+        deployed_commit = app.env['DEPLOYED_COMMIT']
       end
 
       delta = nil
@@ -62,7 +47,7 @@ module Heroku::Deploy
         delta = Delta.calcuate_from deployed_commit, new_commit
       end
 
-      strategy = Strategy.build_from_delta delta, self
+      strategy = Strategy.build_from_delta delta, app
       task "Deploying with #{colorize strategy.class.name, :cyan}"
       strategy.perform
 

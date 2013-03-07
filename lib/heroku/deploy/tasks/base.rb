@@ -1,10 +1,10 @@
 module Heroku::Deploy::Task
   class Base
-    attr_accessor :strategy, :runner
+    attr_accessor :strategy, :app
 
     def initialize(strategy)
       @strategy = strategy
-      @runner   = strategy.runner
+      @app      = strategy.app
     end
 
     def rollback_before_push; end

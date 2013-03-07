@@ -12,8 +12,9 @@ module Heroku::Deploy
   class Strategy
     include UI
 
-    def self.build_from_delta(delta, runner)
-      tasks = [ Task::StashGitChanges ]
+    def self.build_from_delta(delta, app)
+      # tasks = [ Task::StashGitChanges ]
+      tasks = [ ]
 
       if delta.has_asset_changes?
         tasks << Task::CompileAssets
@@ -31,15 +32,15 @@ module Heroku::Deploy
       end
       end
 
-      new delta, runner, tasks
+      new delta, app, tasks
     end
 
-    attr_accessor :delta, :runner, :tasks
+    attr_accessor :delta, :app, :tasks
 
-    def initialize(delta, runner, tasks)
-      @delta   = delta
-      @runner  = runner
-      @tasks   = tasks.map { |task| task.new(self) }
+    def initialize(delta, app, tasks)
+      @delta = delta
+      @app   = app
+      @tasks = tasks.map { |task| task.new(self) }
     end
 
     def perform
