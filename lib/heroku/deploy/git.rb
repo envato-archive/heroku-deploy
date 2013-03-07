@@ -24,6 +24,6 @@ class Git
   end
 
   def push_to(options)
-    shell "git push #{options[:remote]} #{options[:ref]}:master --force", :exec => true
+    shell "git push #{options[:remote]} #{options[:ref]}:master --force -v", :exec => true
   end
 end

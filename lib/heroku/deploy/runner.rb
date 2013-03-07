@@ -60,7 +60,7 @@ module Heroku::Deploy
       end
 
       strategy = Strategy.build_from_delta delta, app_data, api
-      task "Deploying #{colorize strategy.class.name, :cyan} strategy"
+      task "Deploying with #{colorize strategy.class.name, :cyan}"
       strategy.perform
 
       finish "Finished! Thanks for playing."
