@@ -6,6 +6,8 @@ module Heroku::Deploy::Task
       @previous_sha = calculate_sha
 
       manifest = "public/assets/manifest.yml"
+      error "#{manifest} could not be found" unless File.exist?(manifest)
+
       task "Commiting manifest.yml for deployment" do
         git %{add #{manifest}}
         git %{commit #{manifest} -m "Manifest for deploy"}
