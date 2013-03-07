@@ -15,6 +15,13 @@ heroku plugins:install git://github.com/envato/heroku-deploy.git
 heroku deploy
 ```
 
+Because we don't do asset compliation on Heroku anymore, we can easily remove the
+asset group from being bundled, giving us a nice speed boost.
+
+```bash
+heroku config:add BUNDLE_WITHOUT="development:test:assets"
+```
+
 ## Development
 
 ```bash
