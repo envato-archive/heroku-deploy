@@ -2,19 +2,18 @@
 
 You need the heroku-cli installed before you can use this plugin.
 
-### Installation
+## Introduction
+
+TODO
+
+## Installation and Usage
 
 ```bash
 heroku plugins:install git://github.com/envato/heroku-deploy.git
-```
-
-### Usage
-
-```bash
 heroku deploy
 ```
 
-### Development
+## Development
 
 ```bash
 git clone git@github.com:envato/heroku-deploy.git
@@ -26,6 +25,15 @@ ln -s ~/path/to/heroku-deploy heroku-deploy
 
 This should allow you to test the plugin and use it locally.
 
-### Copyright
+## Contributing
 
-Copyright © 2013 Envato & Keith Pitt. See LICENSE for details.
+We encourage all community contributions. Keeping this in mind, please follow these general guidelines when contributing:
+
+* Fork the project
+* Create a topic branch for what you’re working on (git checkout -b awesome_feature)
+* Commit away, push that up (git push your\_remote awesome\_feature)
+* Create a new GitHub Issue with the commit, asking for review. Alternatively, send a pull request with details of what you added.
+
+## License
+
+RocketPants is released under the MIT License (see the [license file](https://github.com/envato/heroku-deploy/blob/master/LICENSE)) and is copyright Envato & Keith Pitt, 2013.
