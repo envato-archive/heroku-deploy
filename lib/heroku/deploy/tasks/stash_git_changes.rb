@@ -3,18 +3,34 @@ module Heroku::Deploy::Task
     include Heroku::Deploy::Shell
 
     def before_push
-      @stash = "heroku-deploy-#{Time.now.to_s}"
+      @requires_stashing = false
 
-      git "stash -u #{@stash_name}"
+      task "Checking to see if you have any local changes that need stashing" do
+        output = git "status --untracked-files --short"
+        if !output.empty?
+          @requires_stashing = true
+        end
+      end
+
+      if @requires_stashing
+        @name = "heroku-deploy-#{Time.now.to_i}"
+        task "Stashing your current git changes" do
+          git "stash save -u #{@name}"
+        end
+      end
     end
 
     def after_push
-      stashes       = git 'stash list'
-      matched_stash = stashes.split("\n").find { |x| x.match @stash }
-      label         = matched_stash.match(/^([^:]+)/)
+      return unless @requires_stashing
 
-      git "stash apply #{label}"
-      git "stash drop #{label}"
+      task "Applying back your local changes" do
+        stashes       = git 'stash list'
+        matched_stash = stashes.split("\n").find { |x| x.match @name }
+        label         = matched_stash.match(/^([^:]+)/)
+
+        git "stash apply #{label}"
+        git "stash drop #{label}"
+      end
     end
   end
 end

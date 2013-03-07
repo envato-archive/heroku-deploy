@@ -17,7 +17,7 @@ module Heroku::Deploy
         error output if $?.to_i > 0
 
         # Ensure the string is valid utf8
-        output.to_s.chomp.force_encoding("ISO-8859-1").encode("utf-8", replace: nil)
+        output.to_s.chomp.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil)
       end
     end
   end
