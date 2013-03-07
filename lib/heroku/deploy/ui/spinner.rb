@@ -13,10 +13,10 @@ module Heroku::Deploy
         @spinner = Thread.new do
           loop do
             print @chars[0]
+            @count += 1
             sleep(0.1)
             print "\b"
             @chars.push @chars.shift
-            @count += 1
           end
         end
       end
