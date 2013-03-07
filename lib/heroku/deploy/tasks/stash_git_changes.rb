@@ -14,7 +14,7 @@ module Heroku::Deploy::Task
 
       if @requires_stashing
         @name = "heroku-deploy-#{Time.now.to_i}"
-        task "Stashing your current git changes" do
+        task "Stashing your current changes" do
           git "stash save -u #{@name}"
         end
       end
