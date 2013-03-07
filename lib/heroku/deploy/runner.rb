@@ -12,11 +12,15 @@ module Heroku::Deploy
       new(app, api).deploy
     end
 
-    attr_accessor :app, :api, :git, :heroku_app
+    attr_accessor :app, :api, :heroku_app
 
     def initialize(app, api)
       @api = api
       @app = app
+    end
+
+    def git
+      @git ||= Git.new
     end
 
     def app_data
