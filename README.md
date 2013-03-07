@@ -2,7 +2,19 @@
 
 You need the heroku-cli installed before you can use this plugin.
 
-## Development
+### Installation
+
+```bash
+heroku plugins:install git://github.com/envato/heroku-deploy.git
+```
+
+### Usage
+
+```bash
+heroku deploy
+```
+
+### Development
 
 ```bash
 git clone git@github.com:envato/heroku-deploy.git
