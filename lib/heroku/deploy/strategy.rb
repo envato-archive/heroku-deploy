@@ -12,35 +12,46 @@ module Heroku::Deploy
   class Strategy
     include UI
 
-    def self.build_from_delta(delta, app_data, api)
-      tasks = [ Task::StashGitChanges.new(self) ]
+    def self.build_from_delta(delta, runner)
+      tasks = [ Task::StashGitChanges ]
 
       if delta.has_asset_changes?
-        tasks << Task::CompileAssets.new(self)
+        tasks << Task::CompileAssets
       else
-        tasks << Task::StealManifest.new(self)
+        tasks << Task::StealManifest
       end
 
       if false
-      tasks << Task::CommitManifest.new(self)
+      tasks << Task::CommitManifest
 
       if delta.has_unsafe_migrations?
-        tasks << Task::UnsafeMigration.new(self)
+        tasks << Task::UnsafeMigration
       elsif delta.has_migrations?
-        tasks << Task::SafeMigration.new(self)
+        tasks << Task::SafeMigration
       end
       end
 
-      new delta, app_data, api, tasks
+      new delta, runner, tasks
     end
 
-    attr_accessor :delta, :app_data, :api, :tasks
+    attr_accessor :delta, :runner, :tasks
 
-    def initialize(delta, app_data, api, tasks)
-      @delta    = delta
-      @app_data = app_data
-      @api      = api
-      @tasks    = tasks
+    def initialize(delta, runner, tasks)
+      @delta   = delta
+      @runner  = runner
+      @tasks   = tasks.map { |task| task.new(self) }
+    end
+
+    def api
+      @runner.api
+    end
+
+    def env
+      @runner.env
+    end
+
+    def app_data
+      @runner.app_data
     end
 
     def perform

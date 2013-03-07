@@ -27,8 +27,8 @@ module Heroku::Deploy
       @app_data ||= api.get_app(app).body
     end
 
-    def config
-      @config ||= api.get_config_vars(app).body
+    def env
+      @env ||= api.get_config_vars(app).body
     end
 
     def deploy
@@ -50,7 +50,7 @@ module Heroku::Deploy
 
       deployed_commit = nil
       task "Querying #{colorize git_url, :cyan} for latest deployed commit" do
-        deployed_commit = config['DEPLOYED_COMMIT']
+        deployed_commit = env['DEPLOYED_COMMIT']
       end
 
       delta = nil
@@ -59,7 +59,7 @@ module Heroku::Deploy
         delta = Delta.calcuate_from deployed_commit, new_commit
       end
 
-      strategy = Strategy.build_from_delta delta, app_data, api
+      strategy = Strategy.build_from_delta delta, self
       task "Deploying with #{colorize strategy.class.name, :cyan}"
       strategy.perform
 
