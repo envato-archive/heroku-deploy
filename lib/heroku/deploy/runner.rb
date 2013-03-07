@@ -28,7 +28,10 @@ module Heroku::Deploy
     end
 
     def env
-      @env ||= api.get_config_vars(app).body
+      @env ||= unless @env
+        vars = api.get_config_vars(app).body
+        vars.reject { |key, value| key == 'PATH' || key == 'GEM_PATH' }
+      end
     end
 
     def deploy
