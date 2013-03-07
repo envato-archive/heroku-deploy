@@ -14,7 +14,14 @@ module Heroku::Deploy
         print "... "
         spinner = Heroku::Deploy::UI::Spinner.new
         spinner.start
-        yield
+
+        begin
+          yield
+        rescue Exception => e
+          spinner.stop # Can `ensure` do this?
+          raise e
+        end
+
         spinner.stop
         print colorize("✓", :green)
       end
