@@ -15,7 +15,9 @@ module Heroku::Deploy::Task
     end
 
     def rollback_before_push
-      git "clean -fd"
+      task "Cleaning directory" do
+        git "clean -fd"
+      end
     end
   end
 end

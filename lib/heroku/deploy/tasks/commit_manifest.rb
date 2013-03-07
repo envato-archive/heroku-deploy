@@ -5,9 +5,10 @@ module Heroku::Deploy::Task
     def before_push
       @previous_sha = calculate_sha
 
+      manifest = "public/assets/manifest.yml"
       task "Commiting manifest.yml for deployment" do
-        git 'add public/assets/manifest.yml'
-        git 'commit -m "Manifest for deploy"'
+        git %{add #{manifest}}
+        git %{commit #{manifest} -m "Manifest for deploy"}
       end
 
       strategy.commit = calculate_sha
