@@ -49,7 +49,7 @@ module Heroku::Deploy
     def perform
       task_runner.perform_method :before_push
       Task::PushCode.new(self).perform
-      task_runner.perform_method_in_reverse :before_push
+      task_runner.perform_method_in_reverse :after_push
     end
   end
 end
