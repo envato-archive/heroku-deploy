@@ -36,4 +36,4 @@ We encourage all community contributions. Keeping this in mind, please follow th
 
 ## License
 
-RocketPants is released under the MIT License (see the [license file](https://github.com/envato/heroku-deploy/blob/master/LICENSE)) and is copyright Envato & Keith Pitt, 2013.
+RocketPants is released under the MIT License (see the [license file](https://github.com/envato/heroku-deploy/blob/master/LICENCE)) and is copyright Envato & Keith Pitt, 2013.
