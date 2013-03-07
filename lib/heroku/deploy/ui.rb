@@ -4,8 +4,9 @@ require "heroku/deploy/ui/spinner"
 module Heroku::Deploy
   module UI
     include Colors
+    extend Colors
 
-    PREFIX = "--> "
+    PREFIX = colorize("--> ", :yellow)
 
     def task(message, options = {})
       print "#{PREFIX}#{message}"
@@ -19,6 +20,7 @@ module Heroku::Deploy
           yield
         rescue Exception => e
           spinner.stop # Can `ensure` do this?
+          print "\n"
           raise e
         end
 
@@ -30,7 +32,7 @@ module Heroku::Deploy
     end
 
     def finish(message)
-      puts "#{colorize (PREFIX + message), :green} #{emoji :smile}"
+      puts "#{PREFIX} #{colorize message, :green} #{emoji :smile}"
       exit 0
     end
 
