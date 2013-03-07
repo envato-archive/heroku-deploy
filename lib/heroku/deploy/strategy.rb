@@ -13,23 +13,20 @@ module Heroku::Deploy
     include UI
 
     def self.build_from_delta(delta, app)
-      # tasks = [ Task::StashGitChanges ]
-      tasks = [ ]
+      tasks = [ Task::StashGitChanges ]
 
       if delta.has_asset_changes?
-        #tasks << Task::CompileAssets
+        tasks << Task::CompileAssets
       else
-        #tasks << Task::StealManifest
+        tasks << Task::StealManifest
       end
 
-      if false
       tasks << Task::CommitManifest
 
       if delta.has_unsafe_migrations?
-        tasks << Task::UnsafeMigration
+        #tasks << Task::UnsafeMigration
       elsif delta.has_migrations?
-        tasks << Task::SafeMigration
-      end
+        #tasks << Task::SafeMigration
       end
 
       new delta, app, tasks
