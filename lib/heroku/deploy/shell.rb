@@ -7,8 +7,16 @@ module Heroku::Deploy
     end
 
     def shell(cmd, options = {})
+      # Ensure all output is written to the same place
+      cmd = "#{cmd} 2>&1"
+
+      if env = options[:env]
+        exports = env.keys.map { |key| "#{key}=#{env[key].inspect}" }
+        cmd = "#{exports.join " "} #{cmd}"
+      end
+
       puts "$  #{cmd}" if ENV['DEBUG']
-      cmd = "#{cmd} 2>&1" # Ensure all output is written to the same place
+
       if options[:exec]
         system cmd
       else
