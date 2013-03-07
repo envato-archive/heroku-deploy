@@ -7,15 +7,19 @@ module Heroku::Deploy
 
     PREFIX = "--> "
 
-    def task(message, &block)
-      print "#{PREFIX}#{message}...."
+    def task(message, options = {})
+      print "#{PREFIX}#{message}"
+
       if block_given?
+        print "... "
         spinner = Heroku::Deploy::UI::Spinner.new
         spinner.start
         yield
         spinner.stop
+        print colorize("✓", :green)
       end
-      print colorize("✓\n", :green)
+
+      print "\n"
     end
 
     def finish(message)

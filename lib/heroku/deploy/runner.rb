@@ -47,7 +47,6 @@ module Heroku::Deploy
         new_commit = git.sha_for_ref 'HEAD'
         git_url = app_data['git_url']
       end
-      finish "Finished! Thanks for playing."
 
       deployed_commit = nil
       task "Querying #{colorize git_url, :cyan} for latest deployed commit" do
@@ -56,15 +55,15 @@ module Heroku::Deploy
 
       delta = nil
       difference = "#{deployed_commit[0..7]}..#{new_commit[0..7]}"
-      info "Determining deploy strategy for #{colorize difference, :cyan}" do
+      task "Determining deploy strategy for #{colorize difference, :cyan}" do
         delta = Delta.calcuate_from deployed_commit, new_commit
       end
 
       strategy = Strategy.build_from_delta delta, app_data, api
-      task "Deploying #{colorize strategy.class.name, :cyan} strategy" do
-        strategy.perform
-      end
+      task "Deploying #{colorize strategy.class.name, :cyan} strategy"
+      strategy.perform
 
+      finish "Finished! Thanks for playing."
     end
   end
 end

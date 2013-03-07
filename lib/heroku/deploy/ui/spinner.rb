@@ -5,6 +5,7 @@ module Heroku::Deploy
 
       def initialize
         @spinner = nil
+        @count = 0
         @chars = [ '|', '/', '-', '\\' ].map { |c| colorize(c, :yellow) }
       end
 
@@ -15,6 +16,7 @@ module Heroku::Deploy
             sleep(0.1)
             print "\b"
             @chars.push @chars.shift
+            @count += 1
           end
         end
       end
@@ -22,7 +24,9 @@ module Heroku::Deploy
       # stops the spinner and backspaces over last displayed character
       def stop
         @spinner.kill
-        print "\b"
+        if @count > 0
+          print "\b"
+        end
       end
     end
   end
