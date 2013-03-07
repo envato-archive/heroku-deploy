@@ -2,6 +2,10 @@ module Heroku::Deploy
   module Shell
     include UI
 
+    def git(cmd, options = {})
+      shell "git #{cmd}", options
+    end
+
     def shell(cmd, options = {})
       puts "$  #{cmd}" if ENV['DEBUG']
       cmd = "#{cmd} 2>&1" # Ensure all output is written to the same place
