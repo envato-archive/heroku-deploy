@@ -11,48 +11,40 @@ require_relative "tasks/unsafe_migration"
 module Heroku::Deploy
   class Strategy
     def self.build_from_delta(delta, app_data, api)
-      task_klasses = [ Task::StashGitChanges ]
+      tasks = [ Task::StashGitChanges.new(self) ]
 
+      if false
       if delta.has_asset_changes?
-        task_klasses << Task::CompileAssets
+        tasks << Task::CompileAssets.new(self)
       else
-        task_klasses << Task::StealManifest
+        tasks << Task::StealManifest.new(self)
       end
 
-      task_klasses << Task::CommitManifest
+      tasks << Task::CommitManifest.new(self)
 
       if delta.has_unsafe_migrations?
-        task_klasses << Task::UnsafeMigration
+        tasks << Task::UnsafeMigration.new(self)
       elsif delta.has_migrations?
-        task_klasses << Task::SafeMigration
+        tasks << Task::SafeMigration.new(self)
+      end
       end
 
-      new delta, app_data, api, task_klasses
+      new delta, app_data, api, tasks
     end
 
-    attr_accessor :delta, :app_data, :api, :task_klasses
+    attr_accessor :delta, :app_data, :api, :tasks
 
-    def initialize(delta, app_data, api, task_klasses)
-      @delta        = delta
-      @app_data     = app_data
-      @api          = api
-      @task_klasses = task_klasses
+    def initialize(delta, app_data, api, tasks)
+      @delta    = delta
+      @app_data = app_data
+      @api      = api
+      @tasks    = tasks
     end
 
     def perform
       tasks.each &:before_push
-      Task::PushCode.new(app_data, api).perform
+      # Task::PushCode.new(app_data, api).perform
       tasks.each &:after_push
-    end
-
-    private
-
-    def tasks
-      @tasks ||= @task_klasses.map { |klass| instantiate_task klass }
-    end
-
-    def instantiate_task(klass)
-      klass.new(self)
     end
   end
 end
