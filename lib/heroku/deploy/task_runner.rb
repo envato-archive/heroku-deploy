@@ -1,5 +1,7 @@
 module Heroku::Deploy
   class TaskRunner
+    include Heroku::Deploy::Shell
+
     attr_accessor :tasks
 
     def initialize(tasks)

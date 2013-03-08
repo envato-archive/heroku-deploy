@@ -31,12 +31,12 @@ module Heroku::Deploy
     end
 
     def finish(message)
-      puts "#{PREFIX} #{colorize message, :green} #{emoji :smile}"
+      puts "#{PREFIX}#{colorize message, :green} #{emoji :smile}"
       exit 0
     end
 
     def warning(message)
-      puts colorize (PREFIX + message), :red
+      puts "#{PREFIX}#{colorize message, :red}"
     end
 
     def error(message)

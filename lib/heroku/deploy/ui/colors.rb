@@ -18,7 +18,7 @@ module Heroku::Deploy
       }
 
       def colorize(message, color)
-        "\033[#{COLORS[color]}m#{message}\033[0m"
+        "\033[#{COLORS[color].to_s}m#{message}\033[0m"
       end
 
       def emoji(name)
