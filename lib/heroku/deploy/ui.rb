@@ -23,9 +23,8 @@ module Heroku::Deploy
           print "\n"
           raise e
         end
-
         spinner.stop
-        print colorize("✓", :green)
+        print colorize(icon(:tick), :green)
       end
 
       print "\n"

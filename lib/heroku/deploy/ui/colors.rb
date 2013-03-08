@@ -13,12 +13,20 @@ module Heroku::Deploy
         :smile => "\u{1f60a}"
       }
 
+      ICONS = {
+        :tick => "\u{2714}"
+      }
+
       def colorize(message, color)
         "\033[#{COLORS[color]}m#{message}\033[0m"
       end
 
       def emoji(name)
         EMOJI[name]
+      end
+
+      def icon(name)
+        ICONS[name]
       end
     end
   end
