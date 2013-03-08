@@ -1,9 +1,9 @@
 require_relative "task_runner"
 require_relative "tasks/base"
 require_relative "tasks/stash_git_changes"
+require_relative "tasks/switch_to_or_create_production_branch"
 require_relative "tasks/compile_assets"
-require_relative "tasks/steal_manifest"
-require_relative "tasks/commit_manifest"
+require_relative "tasks/commit_assets"
 require_relative "tasks/safe_migration"
 require_relative "tasks/database_migrate"
 require_relative "tasks/push_code"
@@ -14,18 +14,15 @@ module Heroku::Deploy
     include UI
 
     def self.perform_from_delta(delta, app)
-      tasks = [ Task::StashGitChanges ]
+      tasks = [
+        Task::StashGitChanges,
+        Task::SwitchToOrCreateProductionBranch
+      ]
 
-      # Always compile assets for now
-      tasks << Task::CompileAssets
-
-      #if delta.has_asset_changes?
-        #tasks << Task::CompileAssets
-      #else
-        #tasks << Task::StealManifest
-      #end
-
-      tasks << Task::CommitManifest
+      if delta.has_asset_changes?
+        tasks << Task::CompileAssets
+        tasks << Task::CommitAssets
+      end
 
       if delta.has_unsafe_migrations?
         tasks << Task::UnsafeMigration

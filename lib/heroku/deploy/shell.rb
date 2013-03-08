@@ -20,7 +20,8 @@ module Heroku::Deploy
       puts "$  #{cmd}" if ENV['DEBUG']
 
       if options[:exec]
-        system cmd
+        success = system cmd
+        error "\n#{original_cmd}\n#=> Failed" unless success
       else
         output      = `#{cmd}`
         exit_status = $?.to_i

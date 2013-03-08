@@ -5,6 +5,8 @@ module Heroku::Deploy::Task
     def before_push
       @previous_sha = calculate_sha
 
+      raise 'garr!'
+
       name = "manifest.yml"
       manifest = "public/assets/#{name}"
       error "#{manifest} could not be found" unless File.exist?(manifest)
