@@ -16,11 +16,14 @@ module Heroku::Deploy
     def self.perform_from_delta(delta, app)
       tasks = [ Task::StashGitChanges ]
 
-      if delta.has_asset_changes?
-        tasks << Task::CompileAssets
-      else
-        tasks << Task::StealManifest
-      end
+      # Always compile assets for now
+      tasks << Task::CompileAssets
+
+      #if delta.has_asset_changes?
+        #tasks << Task::CompileAssets
+      #else
+        #tasks << Task::StealManifest
+      #end
 
       tasks << Task::CommitManifest
 
