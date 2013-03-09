@@ -1,9 +1,9 @@
 module Heroku::Deploy
-  class Delta
+  class Diff
     include Shell
 
-    def self.calcuate_from(from, to)
-      new(from, to)
+    def self.diff(*args)
+      new(*args)
     end
 
     attr_accessor :from, :to

@@ -21,14 +21,13 @@ module Heroku::Deploy::Task
       end
 
       task "Merging your current branch #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
-        git "merge #{strategy.commit}"
+        git "merge #{strategy.new_commit}"
       end
     end
 
     def after_deploy
-      task "Pushing local #{colorize strategy.branch, :cyan} to #{colorize "origin", :cyan}" do
-        git "push -u origin #{strategy.branch}"
-      end
+      task "Pushing local #{colorize strategy.branch, :cyan} to #{colorize "origin", :cyan}"
+      git "push -u origin #{strategy.branch} -v", :exec => true
 
       switch_back_to_old_branch
     end

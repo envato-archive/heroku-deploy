@@ -1,10 +1,10 @@
 module Heroku::Deploy
-  class TaskRunner
+  class Runner
     include Heroku::Deploy::Shell
 
     attr_accessor :tasks
 
-    def initialize(tasks)
+    def initialize(tasks = [])
       @tasks = tasks
     end
 

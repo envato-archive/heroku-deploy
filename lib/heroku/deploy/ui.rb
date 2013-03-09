@@ -10,6 +10,7 @@ module Heroku::Deploy
 
     def task(message, options = {})
       print "#{PREFIX}#{message}"
+      return_value = nil
 
       if block_given?
         print "... "
@@ -17,7 +18,7 @@ module Heroku::Deploy
         spinner.start
 
         begin
-          yield
+          return_value = yield
         rescue => e
           spinner.stop
           print colorize(icon(:cross), :red) + "\n"
@@ -29,6 +30,8 @@ module Heroku::Deploy
       end
 
       print "\n"
+
+      return_value
     end
 
     def finish(message)

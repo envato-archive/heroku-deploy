@@ -1,8 +1,22 @@
 require "heroku/deploy/app"
 require "heroku/deploy/ui"
 require "heroku/deploy/shell"
-require "heroku/deploy/delta"
-require "heroku/deploy/strategy"
+require "heroku/deploy/runner"
+require "heroku/deploy/diff"
+
+require "heroku/deploy/tasks/base"
+require "heroku/deploy/tasks/stash_git_changes"
+require "heroku/deploy/tasks/prepare_production_branch"
+require "heroku/deploy/tasks/compile_assets"
+require "heroku/deploy/tasks/commit_assets"
+require "heroku/deploy/tasks/safe_migration"
+require "heroku/deploy/tasks/database_migrate"
+require "heroku/deploy/tasks/push_code"
+require "heroku/deploy/tasks/unsafe_migration"
+
+require "heroku/deploy/strategies/base"
+require "heroku/deploy/strategies/delta"
+require "heroku/deploy/strategies/setup"
 
 module Heroku::Deploy
   class Deployer
@@ -12,10 +26,18 @@ module Heroku::Deploy
       new(app).deploy
     end
 
-    attr_accessor :app
+    attr_accessor :app, :git_url, :new_commit, :deployed_commit
 
     def initialize(app)
       @app = app
+    end
+
+    def branch
+      "heroku-deploy/#{app.name}"
+    end
+
+    def commit_key
+      'HEROKU_DEPLOY_COMMIT'
     end
 
     def deploy
@@ -28,25 +50,23 @@ module Heroku::Deploy
               |_|          |___/         |___/
       OUT
 
-
-      new_commit, git_url = nil
       task "Gathering information about the deploy" do
-        new_commit = git %{rev-parse --verify HEAD}
-        git_url = app.git_url
+        self.git_url    = app.git_url
+        self.new_commit = git %{rev-parse --verify HEAD}
       end
 
-      deployed_commit = nil
-      task "Querying #{colorize git_url, :cyan} for latest deployed commit" do
-        deployed_commit = app.env['DEPLOYED_COMMIT']
+      task "Looking for #{colorize commit_key, :cyan} on #{colorize git_url, :cyan}" do
+        self.deployed_commit = app.env[commit_key]
       end
 
-      delta = nil
-      difference = "#{chop_sha deployed_commit}..#{chop_sha new_commit}"
-      task "Determining deploy strategy for #{colorize difference, :cyan}" do
-        delta = Delta.calcuate_from deployed_commit, new_commit
+      if deployed_commit && !deployed_commit.empty?
+        Strategy::Delta.perform self
+      else
+        Strategy::Setup.perform self
       end
 
-      Strategy.perform_from_delta delta, app
+      task "Updating #{colorize commit_key, :cyan}"
+      app.put_config_vars commit_key => new_commit
 
       finish "Finished! Thanks for playing."
     end

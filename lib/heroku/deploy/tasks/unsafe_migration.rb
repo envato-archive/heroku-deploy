@@ -3,12 +3,10 @@ module Heroku::Deploy::Task
     include Heroku::Deploy::UI
 
     def before_deploy
-      task "Checking if preboot is enabled" do
+      task "Turn off preboot if its enabled" do
         @preboot = app.feature_enabled? :preboot
-      end
 
-      if @preboot
-        task "Disabling preboot while we run migrations" do
+        if @preboot
           app.disable_feature :preboot
         end
       end
