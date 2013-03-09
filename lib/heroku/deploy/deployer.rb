@@ -1,7 +1,6 @@
 require "heroku/deploy/app"
 require "heroku/deploy/ui"
 require "heroku/deploy/shell"
-require "heroku/deploy/git"
 require "heroku/deploy/delta"
 require "heroku/deploy/strategy"
 

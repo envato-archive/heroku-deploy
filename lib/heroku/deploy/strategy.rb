@@ -1,7 +1,7 @@
 require_relative "task_runner"
 require_relative "tasks/base"
 require_relative "tasks/stash_git_changes"
-require_relative "tasks/switch_to_or_create_production_branch"
+require_relative "tasks/prepare_production_branch"
 require_relative "tasks/compile_assets"
 require_relative "tasks/commit_assets"
 require_relative "tasks/safe_migration"
@@ -16,10 +16,10 @@ module Heroku::Deploy
     def self.perform_from_delta(delta, app)
       tasks = [
         Task::StashGitChanges,
-        Task::SwitchToOrCreateProductionBranch
+        Task::PrepareProductionBranch
       ]
 
-      if delta.has_asset_changes?
+      if delta.has_asset_changes? || delta.missing_assets?
         tasks << Task::CompileAssets
         tasks << Task::CommitAssets
       end
@@ -40,6 +40,10 @@ module Heroku::Deploy
       @commit = delta.to
       @app    = app
       @tasks  = tasks.map { |task| task.new(self) }
+    end
+
+    def branch
+      "heroku-#{app.name}"
     end
 
     def task_runner

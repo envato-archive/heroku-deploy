@@ -3,11 +3,10 @@ module Heroku::Deploy::Task
     include Heroku::Deploy::Shell
 
     def perform
-      commit = strategy.commit
       git_url = app.git_url
 
-      task "Pushing commit #{colorize commit[0..7], :cyan}"
-      git "push #{git_url} #{commit}:master --force -v", :exec => true
+      task "Pushing #{colorize strategy.branch, :cyan} to #{colorize "#{git_url}:master", :cyan}"
+      git "push #{git_url} #{strategy.branch}:master -v", :exec => true
 
       # Make sure we store the original, because strategy.commit may have
       # changed from one of the tasks (manifest commit)

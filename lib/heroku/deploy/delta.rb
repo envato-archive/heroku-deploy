@@ -1,19 +1,24 @@
 module Heroku::Deploy
   class Delta
+    include Shell
+
     def self.calcuate_from(from, to)
       new(from, to)
     end
 
-    attr_accessor :from, :to, :git
+    attr_accessor :from, :to
 
     def initialize(from, to)
       @from = from
       @to   = to
-      @git  = Git.new
     end
 
     def diff(folders)
-      git.diff :from => from, :to => to, :folder => folders.join(" ")
+      git %{show --pretty="format:" #{from}..#{to} #{folders.join " "}}
+    end
+
+    def missing_assets?
+      !File.exist?("public/assets/manifest.yml")
     end
 
     def has_asset_changes?
