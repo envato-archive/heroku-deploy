@@ -12,24 +12,25 @@ module Heroku::Deploy::Strategy
     end
 
     def perform
-      runner.tasks = [
+      tasks = [
         StashGitChanges.new(self),
         PrepareProductionBranch.new(self)
       ]
 
       if diff.has_asset_changes?
-        runner.tasks << CompileAssets.new(self)
-        runner.tasks << CommitAssets.new(self)
+        tasks << CompileAssets.new(self)
+        tasks << CommitAssets.new(self)
       end
 
       if diff.has_unsafe_migrations?
-        runner.tasks << UnsafeMigration.new(self)
+        tasks << UnsafeMigration.new(self)
       elsif diff.has_migrations?
-        runner.tasks << SafeMigration.new(self)
+        tasks << SafeMigration.new(self)
       end
 
-      runner.tasks << PushCode.new(self)
+      tasks << PushCode.new(self)
 
+      runner.tasks = tasks
       runner.perform_methods :before_deploy, :deploy, :after_deploy
     end
   end
