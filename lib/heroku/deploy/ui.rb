@@ -18,11 +18,13 @@ module Heroku::Deploy
 
         begin
           yield
-        rescue Exception => e
-          spinner.stop # Can `ensure` do this?
-          print "\n"
+        rescue => e
+          spinner.stop
+          print colorize(icon(:cross), :red) + "\n"
+          error e.message
           raise e
         end
+
         spinner.stop
         print colorize(icon(:tick), :green)
       end
@@ -36,15 +38,15 @@ module Heroku::Deploy
     end
 
     def warning(message)
-      error(message)
-    end
-
-    def error(message)
       puts "#{PREFIX}#{colorize message, :red}"
     end
 
-    def fatal(message)
+    def error(message)
       print_and_colorize message, :red
+    end
+
+    def fatal(message)
+      error(message)
       exit 1
     end
 

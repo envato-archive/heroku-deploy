@@ -25,16 +25,14 @@ module Heroku::Deploy
         success = system cmd
 
         unless success
-          error "`#{original_cmd}` Failed"
-          raise CommandFailed.new
+          raise CommandFailed.new("`#{original_cmd}` Failed")
         end
       else
         output      = `#{cmd}`
         exit_status = $?.to_i
 
         if exit_status.to_i > 0
-          error "`#{original_cmd}` Exited with a status of #{exit_status}\nn#{output}"
-          raise CommandFailed.new
+          raise CommandFailed.new("`#{original_cmd}` return an exit status of #{exit_status}\n\n#{output}")
         end
 
         # Ensure the string is valid utf8

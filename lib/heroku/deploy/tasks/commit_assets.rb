@@ -3,8 +3,6 @@ module Heroku::Deploy::Task
     include Heroku::Deploy::Shell
 
     def before_push
-      @previous_sha = calculate_sha
-
       assets_folder = "public/assets"
 
       has_changes = false
@@ -17,18 +15,17 @@ module Heroku::Deploy::Task
         task "Commiting changed #{colorize assets_folder, :cyan} for deployment" do
           git %{add #{assets_folder}}
           git %{commit #{assets_folder} -m "[heroku-deploy] Compiled assets for deployment"}
+
+          @deployment_commit = git 'rev-parse --verify HEAD'
         end
       end
     end
 
     def rollback_before_push
-      git %{reset --hard #{@previous_sha}}
-    end
-
-    private
-
-    def calculate_sha
-      git 'rev-parse --verify HEAD'
+      # If we made the asset compilation commit, revert it.
+      if @deployment_commit
+        git %{revert #{@deployment_commit} --no-edit}
+      end
     end
   end
 end

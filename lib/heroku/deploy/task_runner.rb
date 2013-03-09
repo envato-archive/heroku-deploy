@@ -25,9 +25,9 @@ module Heroku::Deploy
       begin
         tasks.each do |task|
           current_task = task
-          current_task.public_send method
 
           performed_tasks << current_task
+          current_task.public_send method
         end
       rescue Exception => e
         warning "An error occured when performing #{current_task.class.name}. Rolling back"

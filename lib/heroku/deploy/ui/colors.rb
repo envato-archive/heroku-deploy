@@ -14,7 +14,8 @@ module Heroku::Deploy
       }
 
       ICONS = {
-        :tick => "\u{2714}"
+        :tick  => "\u{2714}",
+        :cross => "\u{2718}",
       }
 
       def colorize(message, color)
