@@ -9,6 +9,7 @@ module Heroku::Deploy::Task
       env_vars = app.env.dup
       env_vars['RAILS_ENV'] = 'production'
       env_vars['RAILS_GROUPS'] = 'assets'
+      env_vars.delete 'BUNDLE_WITHOUT'
 
       task "Precompiling assets"
       shell "bundle exec rake assets:precompile", :env => env_vars, :exec => true
