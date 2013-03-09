@@ -14,38 +14,44 @@ module Heroku::Deploy
     include UI
 
     def self.perform_from_delta(delta, app)
-      tasks = [
-        Task::StashGitChanges,
-        Task::PrepareProductionBranch
-      ]
-
-      if delta.has_asset_changes? || delta.missing_assets?
-        tasks << Task::CompileAssets
-        tasks << Task::CommitAssets
-      end
-
-      if delta.has_unsafe_migrations?
-        tasks << Task::UnsafeMigration
-      elsif delta.has_migrations?
-        tasks << Task::SafeMigration
-      end
-
-      tasks << Task::PushCode
-
-      new(delta, app, tasks).perform
+      new(delta, app).perform
     end
 
-    attr_accessor :delta, :commit, :app, :tasks
+    attr_accessor :delta, :commit, :app
 
-    def initialize(delta, app, tasks)
-      @delta  = delta
-      @commit = delta.to
-      @app    = app
-      @tasks  = tasks.map { |task| task.new(self) }
+    def initialize(delta, app)
+      @delta = delta
+      @app   = app
+    end
+
+    def commit
+      delta.to
     end
 
     def branch
       "heroku-deploy/#{app.name}"
+    end
+
+    def tasks
+      tasks = [
+        Task::StashGitChanges.new(self),
+        Task::PrepareProductionBranch.new(self)
+      ]
+
+      if delta.has_asset_changes?
+        tasks << Task::CompileAssets.new(self)
+        tasks << Task::CommitAssets.new(self)
+      end
+
+      if delta.has_unsafe_migrations?
+        tasks << Task::UnsafeMigration.new(self)
+      elsif delta.has_migrations?
+        tasks << Task::SafeMigration.new(self)
+      end
+
+      tasks << Task::PushCode.new(self)
+
+      tasks
     end
 
     def task_runner
@@ -53,7 +59,7 @@ module Heroku::Deploy
     end
 
     def perform
-      task_runner.perform_methods :before_deploy, :deploy, :after_deploy
+      TaskRunner.new(tasks).perform_methods :before_deploy, :deploy, :after_deploy
     end
   end
 end

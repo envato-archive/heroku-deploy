@@ -17,10 +17,6 @@ module Heroku::Deploy
       git %{show --pretty="format:" #{from}..#{to} #{folders.join " "}}
     end
 
-    def missing_assets?
-      !File.exist?("public/assets/manifest.yml")
-    end
-
     def has_asset_changes?
       folders_that_could_have_changes = %w(app/assets lib/assets vendor/assets Gemfile.lock)
 
