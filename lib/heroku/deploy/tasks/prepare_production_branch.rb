@@ -2,7 +2,7 @@ module Heroku::Deploy::Task
   class PrepareProductionBranch < Base
     include Heroku::Deploy::Shell
 
-    def before_push
+    def before_deploy
       @previous_branch = git "rev-parse --abbrev-ref HEAD"
 
       # Always fetch first. The repo may have already been created.
@@ -25,7 +25,7 @@ module Heroku::Deploy::Task
       end
     end
 
-    def after_push
+    def after_deploy
       task "Pushing local #{colorize strategy.branch, :cyan} to #{colorize "origin", :cyan}" do
         git "push -u origin #{strategy.branch}"
       end
@@ -33,7 +33,7 @@ module Heroku::Deploy::Task
       switch_back_to_old_branch
     end
 
-    def rollback_before_push
+    def rollback_before_deploy
       switch_back_to_old_branch
     end
 

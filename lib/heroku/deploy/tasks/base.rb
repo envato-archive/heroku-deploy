@@ -7,10 +7,13 @@ module Heroku::Deploy::Task
       @app      = strategy.app
     end
 
-    def rollback_before_push; end
-    def before_push; end
+    def rollback_before_deploy; end
+    def before_deploy; end
 
-    def rollback_after_push; end
-    def after_push; end
+    def deploy; end
+    def rollback_deploy; end
+
+    def rollback_after_deploy; end
+    def after_deploy; end
   end
 end

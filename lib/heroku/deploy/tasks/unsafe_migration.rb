@@ -2,7 +2,7 @@ module Heroku::Deploy::Task
   class UnsafeMigration < Base
     include Heroku::Deploy::UI
 
-    def before_push
+    def before_deploy
       task "Checking if preboot is enabled" do
         @preboot = app.feature_enabled? :preboot
       end
@@ -18,8 +18,8 @@ module Heroku::Deploy::Task
       end
     end
 
-    def after_push
-      DatabaseMigrate.new(strategy).perform
+    def after_deploy
+      DatabaseMigrate.migrate(strategy)
 
       task "Turning off maintenance mode" do
         app.disable_maintenance

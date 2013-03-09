@@ -30,6 +30,8 @@ module Heroku::Deploy
         tasks << Task::SafeMigration
       end
 
+      tasks << Task::PushCode
+
       new(delta, app, tasks).perform
     end
 
@@ -51,9 +53,9 @@ module Heroku::Deploy
     end
 
     def perform
-      task_runner.perform_method :before_push
-      Task::PushCode.new(self).perform
-      task_runner.perform_method_in_reverse :after_push
+      task_runner.perform_method :before_deploy
+      task_runner.perform_method :deploy
+      task_runner.perform_method_in_reverse :after_deploy
     end
   end
 end

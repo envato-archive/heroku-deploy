@@ -2,7 +2,7 @@ module Heroku::Deploy::Task
   class CommitAssets < Base
     include Heroku::Deploy::Shell
 
-    def before_push
+    def before_deploy
       assets_folder = "public/assets"
 
       has_changes = false
@@ -21,7 +21,7 @@ module Heroku::Deploy::Task
       end
     end
 
-    def rollback_before_push
+    def rollback_before_deploy
       # If we made the asset compilation commit, revert it.
       if @deployment_commit
         git %{revert #{@deployment_commit} --no-edit}

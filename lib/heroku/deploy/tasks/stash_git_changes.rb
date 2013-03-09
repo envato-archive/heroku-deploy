@@ -2,7 +2,7 @@ module Heroku::Deploy::Task
   class StashGitChanges < Base
     include Heroku::Deploy::Shell
 
-    def before_push
+    def before_deploy
       @requires_stashing = false
 
       task "Checking to see if you have any local changes that need stashing" do
@@ -20,11 +20,11 @@ module Heroku::Deploy::Task
       end
     end
 
-    def rollback_before_push
-      after_push
+    def rollback_before_deploy
+      after_deploy
     end
 
-    def after_push
+    def after_deploy
       return unless @requires_stashing
 
       task "Applying back your local changes" do

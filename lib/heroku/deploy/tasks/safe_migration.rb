@@ -1,7 +1,7 @@
 module Heroku::Deploy::Task
   class SafeMigration < Base
-    def before_push
-      DatabaseMigrate.new(strategy).perform
+    def before_deploy
+      DatabaseMigrate.migrate(strategy)
     end
   end
 end
