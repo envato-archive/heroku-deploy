@@ -5,6 +5,10 @@ module Heroku::Deploy::Task
     def before_push
       @previous_branch = git "rev-parse --abbrev-ref HEAD"
 
+      task "Fetching from #{colorize "origin", :cyan}" do
+        git "fetch origin"
+      end
+
       task "Switching to #{colorize strategy.branch, :cyan}" do
         branches = git "branch"
 
@@ -13,10 +17,6 @@ module Heroku::Deploy::Task
         else
           git "checkout -b #{strategy.branch}"
         end
-      end
-
-      task "Fetching #{colorize strategy.branch, :cyan} from #{colorize "origin", :cyan}" do
-        git "fetch origin #{strategy.branch}"
       end
 
       task "Merging #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
