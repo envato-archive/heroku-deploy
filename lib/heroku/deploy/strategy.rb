@@ -43,7 +43,7 @@ module Heroku::Deploy
     end
 
     def branch
-      "heroku-#{app.name}"
+      "heroku-deploy-#{app.name}"
     end
 
     def task_runner
