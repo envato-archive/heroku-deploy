@@ -21,7 +21,6 @@ module Heroku::Deploy
         rescue => e
           spinner.stop
           print colorize(icon(:cross), :red) + "\n"
-          error e.message
           raise e
         end
 

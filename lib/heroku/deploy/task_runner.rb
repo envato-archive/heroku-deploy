@@ -29,8 +29,9 @@ module Heroku::Deploy
           performed_tasks << current_task
           current_task.public_send method
         end
-      rescue Exception => e
-        warning "An error occured when performing #{current_task.class.name}. Rolling back"
+      rescue => e
+        warning e.message
+        warning "#{current_task.class.name} failed. Rolling back"
 
         performed_tasks.reverse.each do |task|
           task.public_send "rollback_#{method.to_s}"

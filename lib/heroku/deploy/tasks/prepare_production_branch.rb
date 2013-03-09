@@ -20,7 +20,7 @@ module Heroku::Deploy::Task
         end
       end
 
-      task "Merging #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
+      task "Merging your current branch #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
         git "merge #{strategy.commit}"
       end
     end

@@ -24,9 +24,7 @@ module Heroku::Deploy
       if options[:exec]
         success = system cmd
 
-        unless success
-          raise CommandFailed.new("`#{original_cmd}` Failed")
-        end
+        raise CommandFailed.new("`#{original_cmd}` failed") unless success
       else
         output      = `#{cmd}`
         exit_status = $?.to_i
