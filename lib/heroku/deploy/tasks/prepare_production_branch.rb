@@ -5,6 +5,7 @@ module Heroku::Deploy::Task
     def before_push
       @previous_branch = git "rev-parse --abbrev-ref HEAD"
 
+      # Always fetch first. The repo may have already been created.
       task "Fetching from #{colorize "origin", :cyan}" do
         git "fetch origin"
       end
