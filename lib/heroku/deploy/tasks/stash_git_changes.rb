@@ -3,19 +3,12 @@ module Heroku::Deploy::Task
     include Heroku::Deploy::Shell
 
     def before_deploy
-      @requires_stashing = false
+      output = git "status --untracked-files --short"
 
-      task "Checking to see if you have any local changes that need stashing" do
-        output = git "status --untracked-files --short"
-        if !output.empty?
-          @requires_stashing = true
-        end
-      end
-
-      if @requires_stashing
-        @name = "heroku-deploy-#{Time.now.to_i}"
+      unless output.empty?
+        @stash_name = "heroku-deploy-#{Time.now.to_i}"
         task "Stashing your current changes" do
-          git "stash save -u #{@name}"
+          git "stash save -u #{@stash_name}"
         end
       end
     end
@@ -25,7 +18,7 @@ module Heroku::Deploy::Task
     end
 
     def after_deploy
-      return unless @requires_stashing
+      return unless @stash_name
 
       task "Applying back your local changes" do
         stashes       = git 'stash list'
