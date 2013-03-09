@@ -8,32 +8,23 @@ module Heroku::Deploy
       @tasks = tasks
     end
 
-    def perform_method_in_reverse(method)
-      perform tasks.reverse, method
-    end
-
-    def perform_method(method)
-      perform tasks, method
-    end
-
-    private
-
-    def perform(tasks, method)
+    def perform_methods(*methods)
       performed_tasks = []
       current_task = nil
 
       begin
-        tasks.each do |task|
-          current_task = task
-
-          performed_tasks << current_task
-          current_task.public_send method
+        methods.each do |method|
+          tasks.each do |task|
+            current_task = task
+            performed_tasks << [ current_task, method ]
+            current_task.public_send method
+          end
         end
       rescue => e
         warning e.message
         warning "#{current_task.class.name} failed. Rolling back"
 
-        performed_tasks.reverse.each do |task|
+        performed_tasks.reverse.each do |task, method|
           task.public_send "rollback_#{method.to_s}"
         end
 

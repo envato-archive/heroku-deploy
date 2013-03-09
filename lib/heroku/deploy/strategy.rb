@@ -53,9 +53,7 @@ module Heroku::Deploy
     end
 
     def perform
-      task_runner.perform_method :before_deploy
-      task_runner.perform_method :deploy
-      task_runner.perform_method_in_reverse :after_deploy
+      task_runner.perform_methods :before_deploy, :deploy, :after_deploy
     end
   end
 end
