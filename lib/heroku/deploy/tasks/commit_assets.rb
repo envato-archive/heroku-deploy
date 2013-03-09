@@ -12,7 +12,7 @@ module Heroku::Deploy::Task
       end
 
       if has_changes
-        task "Commiting changed #{colorize assets_folder, :cyan} for deployment" do
+        task "Commiting #{colorize assets_folder, :cyan} for deployment" do
           git %{add #{assets_folder}}
           git %{commit #{assets_folder} -m "[heroku-deploy] Compiled assets for deployment"}
 
