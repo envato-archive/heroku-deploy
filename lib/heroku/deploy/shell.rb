@@ -1,5 +1,7 @@
 module Heroku::Deploy
   module Shell
+    class CommandFailed < StandardError; end
+
     include UI
 
     def git(cmd, options = {})
@@ -21,13 +23,18 @@ module Heroku::Deploy
 
       if options[:exec]
         success = system cmd
-        error "\n#{original_cmd}\n#=> Failed" unless success
+
+        unless success
+          error "`#{original_cmd}` Failed"
+          raise CommandFailed.new
+        end
       else
         output      = `#{cmd}`
         exit_status = $?.to_i
 
         if exit_status.to_i > 0
-          error "\n#{original_cmd}\n#=> Exited with a status of #{exit_status}\nn#{output}"
+          error "`#{original_cmd}` Exited with a status of #{exit_status}\nn#{output}"
+          raise CommandFailed.new
         end
 
         # Ensure the string is valid utf8

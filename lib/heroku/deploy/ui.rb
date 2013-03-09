@@ -36,10 +36,14 @@ module Heroku::Deploy
     end
 
     def warning(message)
-      puts "#{PREFIX}#{colorize message, :red}"
+      error(message)
     end
 
     def error(message)
+      puts "#{PREFIX}#{colorize message, :red}"
+    end
+
+    def fatal(message)
       print_and_colorize message, :red
       exit 1
     end
