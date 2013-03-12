@@ -36,7 +36,7 @@ module Heroku::Deploy
     end
 
     def disable_maintenance
-      post_app_maintenance '1'
+      post_app_maintenance '0'
     end
 
     def enable_maintenance
