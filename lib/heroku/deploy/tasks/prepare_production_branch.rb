@@ -15,10 +15,14 @@ module Heroku::Deploy::Task
 
         if branches.match /#{strategy.branch}$/
           git "checkout #{strategy.branch}"
-          git "reset origin/#{strategy.branch} --hard"
         else
           git "checkout -b #{strategy.branch}"
         end
+
+        # Always hard reset to whats on origin before merging master
+        # in. When we create the branch - we may not have the latest commits.
+        # This ensures that we do.
+        git "reset origin/#{strategy.branch} --hard"
       end
 
       task "Merging your current branch #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
