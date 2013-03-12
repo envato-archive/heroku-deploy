@@ -5,6 +5,12 @@ module Heroku::Deploy::Task
     def before_deploy
       @previous_branch = git "rev-parse --abbrev-ref HEAD"
 
+      # If HEAD is returned, it means we're on a random commit, instead
+      # of a branch.
+      if @previous_branch == "HEAD"
+        @previous_branch = git "rev-parse --verify HEAD"
+      end
+
       # Always fetch first. The repo may have already been created.
       task "Fetching from #{colorize "origin", :cyan}" do
         git "fetch origin"
