@@ -22,9 +22,9 @@ module Heroku::Deploy::Task
     end
 
     def rollback_before_deploy
-      # If we made the asset compilation commit, revert it.
+      # Revert back to the commit before we compiled assets
       if @deployment_commit
-        git %{revert #{@deployment_commit} --no-edit}
+        git %{reset #{@deployment_commit}~1 --hard}
       end
     end
   end
