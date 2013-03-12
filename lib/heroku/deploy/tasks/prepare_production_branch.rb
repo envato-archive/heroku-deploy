@@ -15,6 +15,7 @@ module Heroku::Deploy::Task
 
         if branches.match /#{strategy.branch}$/
           git "checkout #{strategy.branch}"
+          git "reset origin/#{strategy.branch} --hard"
         else
           git "checkout -b #{strategy.branch}"
         end
