@@ -55,7 +55,7 @@ module Heroku::Deploy
         ls_remote = git %{ls-remote #{git_url}}
         result = ls_remote.match(/^(.+)refs\/heads\/master/)
 
-        self.deployed_commit = result[1]
+        self.deployed_commit = result[1].chomp.strip
       end
 
       if deployed_commit && !deployed_commit.empty?
