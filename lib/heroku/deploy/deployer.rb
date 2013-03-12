@@ -36,10 +36,6 @@ module Heroku::Deploy
       "heroku-deploy/#{app.name}"
     end
 
-    def commit_key
-      'HEROKU_DEPLOY_COMMIT'
-    end
-
     def deploy
       banner <<-OUT
       _            _             _
@@ -55,8 +51,11 @@ module Heroku::Deploy
         self.new_commit = git %{rev-parse --verify HEAD}
       end
 
-      task "Looking for #{colorize commit_key, :cyan} on #{colorize git_url, :cyan}" do
-        self.deployed_commit = app.env[commit_key]
+      task "Looking at what is currently on #{colorize git_url, :cyan}" do
+        ls_remote = git %{ls-remote #{git_url}}
+        result = ls_remote.match(/^(.+)refs\/heads\/master/)
+
+        self.deployed_commit = result[1]
       end
 
       if deployed_commit && !deployed_commit.empty?
@@ -64,9 +63,6 @@ module Heroku::Deploy
       else
         Strategy::Setup.perform self
       end
-
-      task "Updating #{colorize commit_key, :cyan}"
-      app.put_config_vars commit_key => new_commit
 
       finish "Finished! Thanks for playing."
     end
