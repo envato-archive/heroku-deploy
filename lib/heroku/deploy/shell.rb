@@ -34,7 +34,11 @@ module Heroku::Deploy
         end
 
         # Ensure the string is valid utf8
-        output.to_s.chomp.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil)
+        cleaned_output = output.to_s.chomp.force_encoding("ISO-8859-1").encode("utf-8", :replace => nil)
+
+        puts claned_output if ENV['DEBUG']
+
+        cleaned_output
       end
     end
   end
