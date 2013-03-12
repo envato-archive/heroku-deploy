@@ -13,7 +13,7 @@ module Heroku::Deploy::Task
       task "Switching to #{colorize strategy.branch, :cyan}" do
         branches = git "branch"
 
-        if branches.match strategy.branch
+        if branches.match /#{strategy.branch}$/
           git "checkout #{strategy.branch}"
         else
           git "checkout -b #{strategy.branch}"
