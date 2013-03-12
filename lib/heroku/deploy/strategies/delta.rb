@@ -22,13 +22,15 @@ module Heroku::Deploy::Strategy
         tasks << CommitAssets.new(self)
       end
 
+      tasks << PushToOrigin.new(self)
+
       if diff.has_unsafe_migrations?
         tasks << UnsafeMigration.new(self)
       elsif diff.has_migrations?
         tasks << SafeMigration.new(self)
       end
 
-      tasks << PushCode.new(self)
+      tasks << PushToHeroku.new(self)
 
       runner.tasks = tasks
       runner.perform_methods :before_deploy, :deploy, :after_deploy

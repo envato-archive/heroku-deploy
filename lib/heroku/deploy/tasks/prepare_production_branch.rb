@@ -28,7 +28,7 @@ module Heroku::Deploy::Task
         # Always hard reset to whats on origin before merging master
         # in. When we create the branch - we may not have the latest commits.
         # This ensures that we do.
-        git "reset origin/#{strategy.branch} --hard"
+          git "reset origin/#{strategy.branch} --hard"
       end
 
       task "Merging your current branch #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
@@ -37,9 +37,6 @@ module Heroku::Deploy::Task
     end
 
     def after_deploy
-      task "Pushing local #{colorize strategy.branch, :cyan} to #{colorize "origin", :cyan}"
-      git "push -u origin #{strategy.branch} -v", :exec => true
-
       switch_back_to_old_branch
     end
 

@@ -10,8 +10,9 @@ module Heroku::Deploy::Strategy
         PrepareProductionBranch.new(self),
         CompileAssets.new(self),
         CommitAssets.new(self),
+        PushToOrigin.new(self),
         UnsafeMigration.new(self),
-        PushCode.new(self)
+        PushToHeroku.new(self)
       ]
 
       runner.perform_methods :before_deploy, :deploy, :after_deploy

@@ -1,5 +1,5 @@
 module Heroku::Deploy::Task
-  class PushCode < Base
+  class PushToHeroku < Base
     include Heroku::Deploy::Shell
 
     def deploy
