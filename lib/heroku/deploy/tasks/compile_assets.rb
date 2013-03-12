@@ -1,5 +1,9 @@
 module Heroku::Deploy::Task
   class CompileAssets < Base
+    def self.missing_assets?
+      !File.exist?("public/assets/manifest.yml")
+    end
+
     include Heroku::Deploy::Shell
 
     def before_deploy

@@ -17,7 +17,7 @@ module Heroku::Deploy::Strategy
         PrepareProductionBranch.new(self)
       ]
 
-      if diff.has_asset_changes?
+      if diff.has_asset_changes? || CompileAssets.missing_assets?
         tasks << CompileAssets.new(self)
         tasks << CommitAssets.new(self)
       end
