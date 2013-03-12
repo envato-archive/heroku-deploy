@@ -4,6 +4,7 @@ module Heroku::Deploy::Strategy
 
     def perform
       runner.tasks = [
+        Lock.new(self),
         StashGitChanges.new(self),
         PrepareProductionBranch.new(self),
         CompileAssets.new(self),

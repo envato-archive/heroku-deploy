@@ -13,6 +13,7 @@ module Heroku::Deploy::Strategy
 
     def perform
       tasks = [
+        Lock.new(self),
         StashGitChanges.new(self),
         PrepareProductionBranch.new(self)
       ]

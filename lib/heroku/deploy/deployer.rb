@@ -5,6 +5,7 @@ require "heroku/deploy/runner"
 require "heroku/deploy/diff"
 
 require "heroku/deploy/tasks/base"
+require "heroku/deploy/tasks/lock"
 require "heroku/deploy/tasks/stash_git_changes"
 require "heroku/deploy/tasks/prepare_production_branch"
 require "heroku/deploy/tasks/compile_assets"
