@@ -3,6 +3,8 @@ module Heroku::Deploy::Strategy
     include Heroku::Deploy::Task
 
     def perform
+      task "This looks like a first time deploy to Heroku"
+
       runner.tasks = [
         StashGitChanges.new(self),
         PrepareProductionBranch.new(self),
