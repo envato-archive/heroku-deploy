@@ -22,7 +22,7 @@ module Heroku::Deploy::Task
 
       task "Applying back your local changes" do
         stashes       = git 'stash list'
-        matched_stash = stashes.split("\n").find { |x| x.match @name }
+        matched_stash = stashes.split("\n").find { |x| x.match @stash_name }
         label         = matched_stash.match(/^([^:]+)/)
 
         git "stash apply #{label}"
