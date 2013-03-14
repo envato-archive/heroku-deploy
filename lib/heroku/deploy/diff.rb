@@ -14,7 +14,7 @@ module Heroku::Deploy
     end
 
     def diff(folders)
-      git %{show --pretty="format:" #{from}..#{to} #{folders.join " "}}
+      git %{diff #{from}..#{to} --diff-filter=A #{folders.join " "}}
     end
 
     def has_asset_changes?
