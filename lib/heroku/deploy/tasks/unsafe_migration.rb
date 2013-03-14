@@ -14,11 +14,11 @@ module Heroku::Deploy::Task
       task "Turning on maintenance mode" do
         app.enable_maintenance
       end
+
+      DatabaseMigrate.migrate(strategy)
     end
 
     def after_deploy
-      DatabaseMigrate.migrate(strategy)
-
       task "Turning off maintenance mode" do
         app.disable_maintenance
       end
