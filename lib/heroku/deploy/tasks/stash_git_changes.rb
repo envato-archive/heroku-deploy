@@ -25,6 +25,10 @@ module Heroku::Deploy::Task
         matched_stash = stashes.split("\n").find { |x| x.match @stash_name }
         label         = matched_stash.match(/^([^:]+)/)
 
+        # Make sure there are no weird local changes (think db/schema.db changing
+        # because we ran migrations locally, and column order changing because postgres
+        # is crazy like that)
+        git "clean -fd"
         git "stash apply #{label}"
         git "stash drop #{label}"
       end
