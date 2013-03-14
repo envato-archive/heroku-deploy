@@ -18,6 +18,10 @@ module Heroku::Deploy::Task
       DatabaseMigrate.migrate(strategy)
     end
 
+    def rollback_before_deploy
+      after_deploy
+    end
+
     def after_deploy
       task "Turning off maintenance mode" do
         app.disable_maintenance
