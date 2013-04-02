@@ -15,6 +15,7 @@ module Heroku::Deploy::Task
       # Also, unshallow the repo with the crazy --depth thing. See
       # http://permalink.gmane.org/gmane.comp.version-control.git/213186
       task "Fetching from #{colorize "origin", :cyan}"
+      git "(test -e .git/shallow) && rm .git/shallow"
       git "fetch origin --depth=2147483647 -v", :exec => true
 
       task "Switching to #{colorize strategy.branch, :cyan}" do
