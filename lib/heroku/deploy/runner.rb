@@ -15,9 +15,13 @@ module Heroku::Deploy
       begin
         methods.each do |method|
           tasks.each do |task|
-            current_task = task
-            performed_tasks << [ current_task, method ]
-            current_task.public_send method
+            task = task.call if task.kind_of?(Proc)
+
+            if task
+              current_task = task
+              performed_tasks << [ current_task, method ]
+              current_task.public_send method
+            end
           end
         end
       rescue => e
