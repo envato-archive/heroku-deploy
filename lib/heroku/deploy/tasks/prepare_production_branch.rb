@@ -11,27 +11,25 @@ module Heroku::Deploy::Task
         @previous_branch = git "rev-parse --verify HEAD"
       end
 
-      # Always fetch the deploy branch first
-      begin
-        task "Fetching #{colorize strategy.branch, :cyan} from #{colorize "origin", :cyan}" do
-          # Unshallow the repo with the crazy --depth thing. See
-          # http://permalink.gmane.org/gmane.comp.version-control.git/213186
-          git "fetch origin #{strategy.branch} --depth=2147483647 -v"
-          git "checkout #{strategy.branch}"
-        end
-      rescue CommandFailed => e
-        if e.message.match /Couldn't find remote ref/
-          task "Could not find remote branch #{colorize strategy.branch, :cyan}, creating one now." do
-            git "checkout -b #{strategy.branch}"
-          end
-        end
-      end
+      # Always fetch first. The repo may have already been created.
+      # Also, unshallow the repo with the crazy --depth thing. See
+      # http://permalink.gmane.org/gmane.comp.version-control.git/213186
+      task "Fetching from #{colorize "origin", :cyan}"
+      git "fetch origin --depth=2147483647 -v", :exec => true
 
       task "Switching to #{colorize strategy.branch, :cyan}" do
+        branches = git "branch"
+
+        if branches.match /#{strategy.branch}$/
+          git "checkout #{strategy.branch}"
+        else
+          git "checkout -b #{strategy.branch}"
+        end
+
         # Always hard reset to whats on origin before merging master
         # in. When we create the branch - we may not have the latest commits.
         # This ensures that we do.
-        git "reset HEAD --hard"
+        git "reset origin/#{strategy.branch} --hard"
       end
 
       task "Merging your current branch #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
