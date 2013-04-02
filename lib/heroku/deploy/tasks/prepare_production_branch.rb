@@ -13,7 +13,7 @@ module Heroku::Deploy::Task
 
       # Always fetch first. The repo may have already been created.
       task "Fetching from #{colorize "origin", :cyan}" do
-        git "fetch origin"
+        git "fetch origin -vv"
       end
 
       task "Switching to #{colorize strategy.branch, :cyan}" do
