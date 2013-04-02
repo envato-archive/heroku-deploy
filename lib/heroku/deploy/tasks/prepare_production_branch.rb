@@ -14,7 +14,9 @@ module Heroku::Deploy::Task
       # Always fetch the deploy branch first
       begin
         task "Fetching #{colorize strategy.branch, :cyan} from #{colorize "origin", :cyan}" do
-          git "fetch origin #{strategy.branch} -v"
+          # Unshallow the repo with the crazy --depth thing. See
+          # http://permalink.gmane.org/gmane.comp.version-control.git/213186
+          git "fetch origin #{strategy.branch} --depth=2147483647 -v"
           git "checkout #{strategy.branch}"
         end
       rescue CommandFailed => e
