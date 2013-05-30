@@ -6,6 +6,8 @@ It's better than `git push`
 
 TODO
 
+I haven't written the introduction and proper usage stuff yet, sorry. I was roped into doing a presentation at Rails Meetup at the last minute, and I open sourced this thing quickly. So if you want to know more, poke @keithpitt on Twitter and Github!
+
 ## Installation and Usage
 
 You need the heroku-cli installed before you can use this plugin.
