@@ -19,8 +19,9 @@ module Heroku::Deploy
 
     def has_asset_changes?
       folders_that_could_have_changes = %w(app/assets lib/assets vendor/assets Gemfile.lock)
+      folders_that_exist = folders_that_could_have_changes.select { |folder| File.exist?(folder) }
 
-      diff(folders_that_could_have_changes).match /diff/
+      diff(folders_that_exist).match /diff/
     end
 
     def has_migrations?
