@@ -19,18 +19,20 @@ module Heroku::Deploy::Task
       git "fetch origin --depth=2147483647 -v", :exec => true
 
       task "Switching to #{colorize strategy.branch, :cyan}" do
-        branches = git "branch"
+        local_branches = git "branch"
 
-        if branches.match /#{strategy.branch}$/
+        if local_branches.match /#{strategy.branch}$/
           git "checkout #{strategy.branch}"
         else
           git "checkout -b #{strategy.branch}"
         end
 
-        # Always hard reset to whats on origin before merging master
-        # in. When we create the branch - we may not have the latest commits.
-        # This ensures that we do.
-        git "reset origin/#{strategy.branch} --hard"
+        # reset to whats on origin if the branch exists there already
+        remote_branches = git "branch -a"
+
+        if remote_branches.match /origin\/#{strategy.branch}$/
+          git "reset origin/#{strategy.branch} --hard"
+        end
       end
 
       task "Merging your current branch #{colorize @previous_branch, :cyan} into #{colorize strategy.branch, :cyan}" do
