@@ -24,6 +24,16 @@ asset group from being bundled, giving us a nice speed boost.
 heroku config:add BUNDLE_WITHOUT="development:test:assets"
 ```
 
+
+## Migrations
+
+By default any safe migrations will run without any downtime. So adding a new
+column/table/index. If a migration file contains an unsafe keyword
+`remove_column`, `execute` as examples, a maintenance page will be used for a
+downtime deploy. If you would like to prevent this behavior, then you can add a
+`# safe` comment on the destructive line. This allows a zero downtime deploy
+even with destructive operations.
+
 ## Development
 
 ```bash
@@ -35,6 +45,11 @@ ln -s ~/path/to/heroku-deploy heroku-deploy
 ```
 
 This should allow you to test the plugin and use it locally.
+
+
+## Testing
+
+The tests can be run with `rspec spec`
 
 ## Contributing
 

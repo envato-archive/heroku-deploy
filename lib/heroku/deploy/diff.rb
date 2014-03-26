@@ -29,10 +29,28 @@ module Heroku::Deploy
     end
 
     def has_unsafe_migrations?
-      migrations_diff.match /change_column|change_table|drop_table|remove_column|remove_index|rename_column|execute/
+      migrations_diff.split("\n").any? do |line|
+        has_unsafe_keyword?(line) && has_no_safe_override?(line)
+      end
     end
 
     private
+
+    def has_unsafe_keyword?(line)
+      line.match(unsafe_migration_regexp)
+    end
+
+    def has_no_safe_override?(line)
+      !line.match(safe_override_regexp)
+    end
+
+    def unsafe_migration_regexp
+      /change_column|change_table|drop_table|remove_column|remove_index|rename_column|execute/
+    end
+
+    def safe_override_regexp
+      /#\s*safe/
+    end
 
     def migrations_diff
       diff %w(db/migrate)
