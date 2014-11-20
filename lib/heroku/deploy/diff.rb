@@ -45,7 +45,7 @@ module Heroku::Deploy
     end
 
     def unsafe_migration_regexp
-      /change_column|change_table|drop_table|remove_column|remove_index|rename_column|execute/
+      /change_column|change_table|drop_table|remove_column|remove_index|rename_column|execute|rename_table/
     end
 
     def safe_override_regexp
